@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from toywiki.models import User
+from toywiki.models import User, Wiki, WikiUser
 from toywiki.utils import Result
 
 
@@ -72,19 +72,46 @@ def find_celebrity(request):
 
 
 @csrf_exempt
-def update_portrait(request):
+def user_portrait(request):
+    result = Result()
     if request.method == 'POST':
         body = json.loads(request.body.decode())
-        result = Result()
         account = body.get('account')
         portrait_url = body.get('portrait_url')
         query_res = User.objects.filter(account=account)
         if len(query_res) == 0:
-            result.setData('data', '用户不存在')
             return HttpResponse(str(result))
         else:
             user = query_res[0]
             user.portrait_url = portrait_url
             user.save(update_fields='portrait_url')
+            result.setOK()
+            return HttpResponse(str(result))
+    if request.method == 'GET':
+        account = request.GET.get('account')
+        query_res = User.objects.filter(account=account).get()
+        result.setOK()
+        result.setData('portrait_url', query_res.portrait_url)
+        return HttpResponse(str(result))
+
+
+@csrf_exempt
+def view_profile(request):
+    if request.method == 'GET':
+        result = Result()
+        account = request.GET.get('account')
+        query_res = User.objects.filter(account=account)
+        if len(query_res) == 0:
+            return HttpResponse(str(result))
+        else:
+            data = [{'wiki_id': w.wiki_id, 'title': w.wiki.title, 'status': w.wiki.status} for w in
+                    WikiUser.objects.filter(Wiki__User_account=account, relationship=1).all()]
+            result.setData('1',data)
+            data = [{'wiki_id': w.wiki_id, 'title': w.wiki.title, 'status': w.wiki.status} for w in
+                    WikiUser.objects.filter(Wiki__User_account=account, relationship=0).all()]
+            result.setData('0',data)
+            data = [{'wiki_id': w.wiki_id, 'title': w.wiki.title, 'status': w.wiki.status} for w in
+                    WikiUser.objects.filter(Wiki__User_account=account, relationship=-1).all()]
+            result.setData('-1',data)
             result.setOK()
             return HttpResponse(str(result))
