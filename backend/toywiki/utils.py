@@ -11,10 +11,10 @@ class Result(dict):
 
     def __init__(self):
         super(Result, self).__init__()
-        self["statuscode"] = 0
+        self["statuscode"] = 1
 
     def setOK(self):
-        self["statuscode"] = 1
+        self["statuscode"] = 0
 
     def setData(self, key, value):
         self[key] = value

@@ -9,8 +9,9 @@ import os
 
 @csrf_exempt
 def upload_img(request):
+    result = Result()
+
     if request.method == "POST":
-        result = Result()
 
         img = request.FILES.get("file")
         existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT) ))
