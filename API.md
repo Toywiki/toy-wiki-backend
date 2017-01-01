@@ -1,6 +1,6 @@
 ## 1. 词条部分
 
-1.1 上传图片  
+#### 1.1 上传图片  
 URL:  
 ```
 http://119.29.161.184:8000/uploadimage  
@@ -19,9 +19,56 @@ success:
 
 fail:
 {
-    statuscode: 1
+    statuscode: -1
 }
 ```
+
+#### 1.2 创建词条
+URL:
+```
+http://119.29.161.184:8000/wiki/createwiki  
+```  
+Params：
+```
+{"title": "词条名字"}
+```
+Response：
+```
+success:
+
+若存在相关词条:  
+{
+    existing:[
+        {
+            "title":"词条1名字",
+            "id": "词条1ID",
+            "introduction": "简介1",
+            "img": "图片1URL"
+        },
+        {
+            "title":"词条2名字",
+            "id": "词条2ID",
+            "introduction": "简介2",
+            "img": "图片2URL"
+        },
+    ]
+    statuscode: 1
+}
+
+若不存在相关词条:
+{
+    statuscode: 0
+}
+
+fail:
+
+{
+    statuscode: -1
+}
+
+```
+
+
 #### 1.3 查看词条
 URL:
 ```
@@ -31,10 +78,94 @@ Response：
 ```
 success:
 {
-    'Title': "词条名字",
-    "Introduction": "词条简介",
-    "Content": "词条内容",
+    'title': "词条名字",
+    "introduction": "词条简介",
+    "content": "词条内容",
     "img": "词条URL",
+    "statuscode": 0
+}
+
+fail:
+{
+    "statuscode": -1
+}
+```
+
+#### 1.4 保存新词条
+URL:
+```  
+http://119.29.161.184:8000/wiki/savewiki    
+```  
+Params：  
+```  
+{ 
+    "account": "用户ID",
+    "title": "词条名字",
+    "introduction": "词条简介",
+    "content": "词条内容",
+    "category": "词条类别",
+    "img": "图片URL"
+}
+```  
+Response：
+```
+success:
+{
+    "statuscode": 0
+}
+
+fail:
+{
+    "statuscode": -1
+}
+```
+
+#### 1.5 编辑词条
+URL:
+```  
+http://119.29.161.184:8000/wiki/editwiki    
+```  
+Params：  
+```  
+{ 
+    "account": "用户ID",
+    "wiki_id": "词条ID",
+    "introduction": "词条简介",
+    "content": "词条内容",
+    "category": "词条类别",
+    "img": "图片URL"
+}
+```  
+Response：
+```
+success:
+{
+    "statuscode": 0
+}
+
+fail:
+{
+    "statuscode": -1
+}
+```
+
+#### 1.6 讨论
+URL:
+```
+http://119.29.161.184:8000/wiki/comment    
+```
+Params：
+```
+{
+    "account": "用户ID",
+    "wiki_id": "词条ID",
+    "content": "评论内容"
+}
+```
+Response：
+```
+success:
+{
     "statuscode": 0
 }
 
@@ -188,4 +319,53 @@ Response:
 }
 ```
 
+<<<<<<< HEAD
+#### 1.4 保存新词条
+URL:
+```  
+http://119.29.161.184:8000/wiki/savewiki    
+```  
+Params：  
+```  
+{ 
+    "account": "用户ID",
+    "Title": "词条名字",
+    "Introduction": "词条简介",
+    "Content": "词条内容",
+    "img": "图片URL"
+}
+```  
+Response：
+```
+success:
+{
+    "statuscode": 0
+}
+
+fail:
+{
+    "statuscode": -1
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=======
+>>>>>>> 92322b2331613302e73aa4032f20a27d5e962802
 
