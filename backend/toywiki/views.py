@@ -37,7 +37,7 @@ def upload_img(request):
 def create_wiki(request):
     result = Result()
     if request.method == "POST":
-        title = json.loads(request.body.decode()).get('Title')
+        title = json.loads(request.body.decode()).get('title')
 
         existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
 
@@ -49,7 +49,7 @@ def create_wiki(request):
 
             for i in existing[::-1]:
                 if i.title not in temp:
-                    result["existing"].append({"Title": i.title, "ID": i.id, "Introduction": i.introduction,
+                    result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
                                            "img": i.img_url})
                     temp.add(i.title)
         else:
@@ -64,9 +64,9 @@ def view_wiki(request):
         id = request.GET.get('id')
         wiki = Wiki.objects.filter(id=id)
         if len(wiki) > 0:
-            result.setData("Title", wiki[0].title)
-            result.setData("Introduction", wiki[0].introduction)
-            result.setData("Content", wiki[0].content)
+            result.setData("title", wiki[0].title)
+            result.setData("introduction", wiki[0].introduction)
+            result.setData("content", wiki[0].content)
             result.setData("img", wiki[0].img_url)
             result.setOK()
 
@@ -79,17 +79,47 @@ def save_wiki(request):
         wiki = json.loads(request.body.decode())
         if wiki is not None:
             account = wiki.get('account')
-            title = wiki.get('Title')
-            introduction = wiki.get('Introduction')
-            content = wiki.get('Content')
+            title = wiki.get('title')
+            introduction = wiki.get('introduction')
+            category = wiki.get('category')
+            content = wiki.get('content')
             img = wiki.get('img')
-            newWiki = Wiki(title=title, introduction=introduction, content=content, img_url=img, status=0)
+            newWiki = Wiki(title=title, introduction=introduction, category=category, content=content, img_url=img, status=0)
             newWiki.save()
 
-            newWikiUser = WikiUser(account=account, wiki=newWiki.id, relationship=1)
+            user = User.objects.filter(account=account)[0]
+            newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
             newWikiUser.save()
 
             result.setOK()
 
     return HttpResponse(str(result))
+
+@csrf_exempt
+def edit_wiki(request):
+    result = Result()
+    if request.method == "POST":
+        wiki = json.loads(request.body.decode())
+        if wiki is not None:
+            account = wiki.get('account')
+            wiki_id = wiki.get('wiki_id')
+            introduction = wiki.get('introduction')
+            category = wiki.get('category')
+            content = wiki.get('content')
+            img = wiki.get('img')
+
+            oldWiki = Wiki.objects.filter(id=wiki_id)[0]
+
+            newWiki = Wiki(title=oldWiki.title, introduction=introduction, category=category, content=content, img_url=img, status=0)
+            newWiki.save()
+
+            user = User.objects.filter(account=account)[0]
+            newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=2)
+            newWikiUser.save()
+
+            result.setOK()
+
+    return HttpResponse(str(result))
+
+
 
