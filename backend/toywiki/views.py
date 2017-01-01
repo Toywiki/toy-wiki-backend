@@ -64,10 +64,13 @@ def view_wiki(request):
         id = request.GET.get('id')
         wiki = Wiki.objects.filter(id=id)
         if len(wiki) > 0:
-            result.setData("title", wiki[0].title)
-            result.setData("introduction", wiki[0].introduction)
-            result.setData("content", wiki[0].content)
-            result.setData("img", wiki[0].img_url)
+            wiki = wiki[0]
+            result.setData("title", wiki.title)
+            result.setData("introduction", wiki.introduction)
+            result.setData("content", wiki.content)
+            result.setData("img", wiki.img_url)
+            wiki.hits += 1
+            wiki.save()
             result.setOK()
 
     return HttpResponse(str(result))
@@ -121,6 +124,102 @@ def edit_wiki(request):
 
     return HttpResponse(str(result))
 
+@csrf_exempt
+def comment(request):
+    result = Result()
+    if request.method == "POST":
+        comm = json.loads(request.body.decode())
+        account = comm.get('account')
+        wiki_id = comm.get('wiki_id')
+        content = comm.get('content')
+        wiki = Wiki.objects.filter(id=wiki_id)[0]
+        user = User.objects.filter(account=account)[0]
+        comment_ = Comment(content=content, wiki=wiki, user_account=user)
+        comment_.save()
+
+        result.setOK()
 
 
+    return HttpResponse(str(result))
 
+@csrf_exempt
+def view_comment(request):
+    result = Result()
+    if request.method == "GET":
+        id = request.GET.get('id')
+        wiki = Wiki.objects.filter(id=id)[0]
+        comments = Comment.objects.filter(wiki=wiki).order_by('time')
+        result.setData("comments", [])
+        for i in comments:
+            result['comments'].append({"account": i.user_account.account, "content": i.content, "time": i.time})
+
+        result.setOK()
+
+    return HttpResponse(str(result))
+
+@csrf_exempt
+def search_wiki_title(request):
+    result = Result()
+    if request.method == "POST":
+        title = json.loads(request.body.decode()).get('title')
+
+        existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
+
+        if len(existing) > 0:
+            result.setStatuscode(1)
+            result.setData("existing", [])
+
+            temp = set()
+
+            for i in existing[::-1]:
+                if i.title not in temp:
+                    result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
+                                           "img": i.img_url})
+                    temp.add(i.title)
+        else:
+            result.setStatuscode(0)
+
+    return HttpResponse(str(result))
+
+@csrf_exempt
+def search_wiki_category(request):
+    result = Result()
+    if request.method == "POST":
+        category = json.loads(request.body.decode()).get('category')
+
+        existing = Wiki.objects.filter(category=category, status=1).order_by('time')
+
+        if len(existing) > 0:
+            result.setStatuscode(1)
+            result.setData("existing", [])
+
+            temp = set()
+
+            for i in existing[::-1]:
+                if i.title not in temp:
+                    result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
+                                           "img": i.img_url})
+                    temp.add(i.title)
+        else:
+            result.setStatuscode(0)
+
+    return HttpResponse(str(result))
+
+
+@csrf_exempt
+def hot_wiki(request):
+    result = Result()
+    if request.method == "GET":
+
+        wikis = Wiki.objects.filter(status=1).order_by('time')
+
+        if len(wikis):
+            result.setData("wikis", [])
+
+            temp = set()
+            for i in wikis[::-1]:
+                if i.title not in temp:
+                    result['wikis'].append({"id": i.id, "title": i.title, "img": i.img_url})
+        result.setOK()
+
+    return HttpResponse(str(result))

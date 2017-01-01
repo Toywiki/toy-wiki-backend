@@ -32,7 +32,7 @@ class Wiki(models.Model):
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
     content = models.TextField(blank=True, null=True)
-    time = models.DateTimeField(blank=True, null=True)
+    time = models.DateTimeField(blank=True, null=True, auto_now=True)
     wiki = models.ForeignKey('Wiki', models.DO_NOTHING, blank=True, null=True)
     user_account = models.ForeignKey('User', models.DO_NOTHING, db_column='user_account', blank=True, null=True)
 

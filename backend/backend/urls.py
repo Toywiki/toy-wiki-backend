@@ -19,7 +19,9 @@ from django.conf.urls.static import static
 from backend import settings
 from toywiki.user_views import user_register, user_login, find_celebrity, user_portrait, view_profile, \
     update_wiki_status, review_wiki
-from toywiki.views import upload_img, create_wiki, view_wiki, save_wiki, edit_wiki
+from toywiki.views import upload_img, create_wiki, view_wiki, save_wiki, edit_wiki, \
+    comment, view_comment, search_wiki_category, search_wiki_title, hot_wiki
+
 
 urlpatterns = [
                   url(r'^admin/', admin.site.urls),
@@ -29,6 +31,12 @@ urlpatterns = [
                   url(r'^wiki/createwiki', create_wiki),
                   url(r'^wiki/editwiki', edit_wiki),
                   url(r'^wiki/savewiki', save_wiki),
+                  url(r'^wiki/comment', comment),
+                  url(r'^wiki/viewcomment', view_comment),
+                  url(r'^wiki/searchwiki_title', search_wiki_title),
+                  url(r'^wiki/searchwiki_category', search_wiki_category),
+                  url(r'^wiki/hotwiki', hot_wiki),
+
                   url(r'^wiki/status', update_wiki_status),
                   url(r'^wiki/review', review_wiki),
                   url(r'^user/register', user_register),
