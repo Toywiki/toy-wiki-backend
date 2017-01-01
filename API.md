@@ -67,3 +67,26 @@ fail:
 }
 
 ```
+
+
+#### 1.3 查看词条
+URL:
+```
+http://119.29.161.184:8000/wiki/viewwiki?id=xxx  
+```  
+Response：
+```
+success:
+{
+    'Title': "词条名字",
+    "Introduction": "词条简介",
+    "Content": "词条内容",
+    "img": "词条URL",
+    "statuscode": 0
+}
+
+fail:
+{
+    "statuscode": -1
+}
+```
