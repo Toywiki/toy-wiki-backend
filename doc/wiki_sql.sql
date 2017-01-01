@@ -23,8 +23,8 @@ USE `mydb` ;
 CREATE TABLE IF NOT EXISTS `mydb`.`Wiki` (
   `ID` INT NOT NULL,
   `title` VARCHAR(45) NULL,
-  `introduction` VARCHAR(65535) NULL,
-  `content` VARCHAR(65535) NULL,
+  `introduction` TEXT NULL,
+  `content` TEXT NULL,
   `status` INT NULL,
   `time` DATETIME NULL,
   `img_url` VARCHAR(45) NULL,
@@ -73,7 +73,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`comment` (
   `comment_ID` INT NOT NULL,
-  `content` VARCHAR(65535) NULL,
+  `content` TEXT NULL,
   `time` DATETIME NULL,
   `Wiki_ID` INT NOT NULL,
   `User_account` VARCHAR(45) NOT NULL,
