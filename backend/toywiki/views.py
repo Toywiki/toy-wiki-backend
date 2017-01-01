@@ -56,3 +56,19 @@ def create_wiki(request):
             result.setStatuscode(0)
 
     return HttpResponse(str(result))
+
+@csrf_exempt
+def view_wiki(request):
+    result = Result()
+    if request.method == "GET":
+        id = request.GET.get('id')
+        wiki = Wiki.objects.filter(id=id)
+        if len(wiki) > 0:
+            result.setData("Title", wiki[0].title)
+            result.setData("Introduction", wiki[0].introduction)
+            result.setData("Content", wiki[0].content)
+            result.setData("img", wiki[0].img_url)
+            result.setOK()
+
+    return HttpResponse(str(result))
+

@@ -17,14 +17,14 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls.static import static
 from backend import settings
-from toywiki.views import upload_img
 from toywiki.user_views import user_register, user_login, find_celebrity
-
-from toywiki.views import upload_img, create_wiki
+from toywiki.views import upload_img, create_wiki, view_wiki
 
 urlpatterns = [
                   url(r'^admin/', admin.site.urls),
                   url(r'^uploadimage', upload_img),
+                  url(r'^wiki/createwiki', create_wiki),
+                  url(r'^wiki/viewwiki', view_wiki),
                   url(r'^wiki/createwiki', create_wiki),
                   url(r'^user/register', user_register),
                   url(r'^user/login', user_login),
