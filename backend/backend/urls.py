@@ -18,12 +18,16 @@ from django.contrib import admin
 from django.conf.urls.static import static
 from backend import settings
 from toywiki.views import upload_img
+from toywiki.user_views import user_register, user_login, find_celebrity
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^uploadimage', upload_img),
+                  url(r'^admin/', admin.site.urls),
+                  url(r'^uploadimage', upload_img),
+                  url(r'^user/register', user_register),
+                  url(r'^user/login', user_login),
+                  url(r'^user/celebrity', find_celebrity)
 
-] + static(
+              ] + static(
     settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT
 )
