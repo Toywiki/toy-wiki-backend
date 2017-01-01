@@ -175,6 +175,158 @@ fail:
 }
 ```
 
+#### 1.7 返回讨论内容
+URL:
+```
+http://119.29.161.184:8000/wiki/viewcomment?id=xxxx(词条id)    
+```
+Response：
+```
+success:
+{
+    "comments":[
+        {
+            "account":"用户ID",
+            "content":"评论内容",
+            "time":"评论时间"
+        },
+        {
+            "account":"用户ID",
+            "content":"评论内容",
+            "time":"评论时间"
+        }
+    ]
+    "statuscode": 0
+}
+
+fail:
+{
+    "statuscode": -1
+}
+```
+
+#### 1.8 通过词条名字搜索相似词条
+URL:
+```
+http://119.29.161.184:8000/wiki/searchwiki_title  
+```  
+Params：
+```
+{"title": "词条名字"}
+```
+Response：
+```
+success:
+
+若存在相关词条:  
+{
+    existing:[
+        {
+            "title":"词条1名字",
+            "id": "词条1ID",
+            "introduction": "简介1",
+            "img": "图片1URL"
+        },
+        {
+            "title":"词条2名字",
+            "id": "词条2ID",
+            "introduction": "简介2",
+            "img": "图片2URL"
+        },
+    ]
+    statuscode: 1
+}
+
+若不存在相关词条:
+{
+    statuscode: 0
+}
+
+fail:
+
+{
+    statuscode: -1
+}
+
+```
+
+#### 1.9 通过类别搜索词条
+URL:
+```
+http://119.29.161.184:8000/wiki/searchwiki_category  
+```  
+Params：
+```
+{"category": "词条类别"}
+```
+Response：
+```
+success:
+
+若存在相关词条:  
+{
+    existing:[
+        {
+            "title":"词条1名字",
+            "id": "词条1ID",
+            "introduction": "简介1",
+            "img": "图片1URL"
+        },
+        {
+            "title":"词条2名字",
+            "id": "词条2ID",
+            "introduction": "简介2",
+            "img": "图片2URL"
+        },
+    ]
+    statuscode: 1
+}
+
+若不存在相关词条:
+{
+    statuscode: 0
+}
+
+fail:
+
+{
+    statuscode: -1
+}
+
+```
+
+#### 1.10 热门词条 返回6条
+URL:
+```  
+http://119.29.161.184:8000/wiki/hotwiki  
+
+(GET)
+```
+Response：
+```
+{
+    "wikis":[
+        {
+            "id": "词条ID",
+            "title": "词条名字",
+            "img": "图片URL"
+        },
+        {
+            "id": "词条ID",
+            "title": "词条名字",
+            "img": "图片URL"
+        },
+    ]
+    statuscode: 0
+}
+
+fail:
+
+{
+    statuscode: -1
+}
+```
+
 
 ## 2. 用户部分
 #### 2.1 用户注册
