@@ -18,3 +18,6 @@ class Result(dict):
 
     def setData(self, key, value):
         self[key] = value
+
+    def setStatusCode(self, status_code):
+        self["statuscode"] = status_code
