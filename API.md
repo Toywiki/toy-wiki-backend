@@ -26,7 +26,7 @@ fail:
 #### 1.2 创建词条
 URL:
 ```
-http://119.29.161.184:8000/createwiki  
+http://119.29.161.184:8000/wiki/createwiki  
 ```  
 Params：
 ```
