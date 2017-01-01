@@ -20,7 +20,10 @@ class Wiki(models.Model):
     title = models.CharField(max_length=45, blank=True, null=True)
     introduction = models.TextField(blank=True, null=True)
     content = models.TextField(blank=True, null=True)
+
+    # 审核不通过：-1； 正在审核：0,； 审核通过：1；
     status = models.IntegerField(blank=True, null=True)
+
     time = models.DateTimeField(blank=True, null=True)
     img_url = models.CharField(max_length=45, blank=True, null=True)
 

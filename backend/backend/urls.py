@@ -17,11 +17,12 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.conf.urls.static import static
 from backend import settings
-from toywiki.views import upload_img
+from toywiki.views import upload_img, create_wiki
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^uploadimage', upload_img),
+    url(r'^wiki/createwiki', create_wiki),
 
 ] + static(
     settings.MEDIA_URL,
