@@ -90,3 +90,51 @@ fail:
     "statuscode": -1
 }
 ```
+
+#### 1.4 保存新词条
+URL:
+```  
+http://119.29.161.184:8000/wiki/savewiki    
+```  
+Params：  
+```  
+{ 
+    "account": "用户ID",
+    "Title": "词条名字",
+    "Introduction": "词条简介",
+    "Content": "词条内容",
+    "img": "图片URL"
+}
+```  
+Response：
+```
+success:
+{
+    "statuscode": 0
+}
+
+fail:
+{
+    "statuscode": -1
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

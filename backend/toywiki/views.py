@@ -72,3 +72,17 @@ def view_wiki(request):
 
     return HttpResponse(str(result))
 
+@csrf_exempt
+def save_wiki(request):
+    result = Result()
+    if request.method == "POST":
+        wiki = json.loads(request.body.decode())
+        if wiki is not None:
+            account = wiki.get('account')
+            title = wiki.get('Title')
+            introduction = wiki.get('Introduction')
+            content = wiki.get('Content')
+            img = wiki.get('img')
+            newWiki = Wiki(title=title, introduction=introduction, content=content, img_url=img, status=0)
+            newWikiUser = w
+
