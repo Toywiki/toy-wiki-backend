@@ -100,12 +100,83 @@ fail:
 }
 ```
 
-### 2.3 返回三个大V
+### 2.3 用户头像
+URL:(GET，获取用户头像URL地址)
+```
+/user/portrait?account=xxx
+```
+Response:
+```
+{
+    'statuscode':0,
+    'portrait':xxx
+}
+```
+
+URL:(POST，更新用户头像地址)
+```
+/user/portrait
+```
+Params:
+```
+{
+    'account':xxx,
+    'portrait_url':xxx,
+}
+```
+Response:
+success
+```
+{
+    'statuscode':0
+}
+```
+fail:
+```
+{
+    'statuscode':-1(用户不存在)
+}
+```
+
+### 2.4 查看用户简介
+URL:(GET)
+```
+/user/profile?account=xxx
+```
+Response:
+```
+{
+    'statuscode':0,
+    '1':[(用户创建、并且通过审核的词条，参照浩杰的状态码)
+        {
+            'wiki_id':xxx,
+            'title':xxx,
+            'status':xxx
+        },...
+    ],
+    '0':[(用户创建的，处于审核状态的词条)
+        {
+            'wiki_id':xxx,
+            'title':xxx,
+            'status':xxx,
+        },...
+    ],
+    '-1':[(用户创建的、审核不通过的词条)
+        {
+            ...
+        }
+    ]
+}
+```
+
+
+### 2.5 返回三个大V
 URL:(GET)
 ```
 /user/celebrity
 ```
 Response:
+```
 {
     'statuscode':0,
     'data':[
