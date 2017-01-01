@@ -62,10 +62,9 @@ def find_celebrity(request):
         if len(query_res) > 3:
             data = [{'account': user.account, 'portrait_url': user.portrait_url, 'num_of_wiki': user.num_of_wiki} for
                     user in query_res[0:3]]
-
         else:
-            data = data = [{'account': user.account, 'portrait_url': user.portrait_url, 'num_of_wiki': user.num_of_wiki}
-                           for user in query_res]
+            data = [{'account': user.account, 'portrait_url': user.portrait_url, 'num_of_wiki': user.num_of_wiki}
+                    for user in query_res]
         result.setOK()
         result.setData('data', data)
         return HttpResponse(str(result))
@@ -106,12 +105,39 @@ def view_profile(request):
         else:
             data = [{'wiki_id': w.wiki_id, 'title': w.wiki.title, 'status': w.wiki.status} for w in
                     WikiUser.objects.filter(Wiki__User_account=account, relationship=1).all()]
-            result.setData('1',data)
+            result.setData('1', data)
             data = [{'wiki_id': w.wiki_id, 'title': w.wiki.title, 'status': w.wiki.status} for w in
-                    WikiUser.objects.filter(Wiki__User_account=account, relationship=0).all()]
-            result.setData('0',data)
-            data = [{'wiki_id': w.wiki_id, 'title': w.wiki.title, 'status': w.wiki.status} for w in
-                    WikiUser.objects.filter(Wiki__User_account=account, relationship=-1).all()]
-            result.setData('-1',data)
+                    WikiUser.objects.filter(Wiki__User_account=account, relationship=2).all()]
+            result.setData('2', data)
             result.setOK()
             return HttpResponse(str(result))
+
+
+@csrf_exempt
+def update_wiki_status(request):
+    if request.method == 'POST':
+        result = Result()
+        body = json.loads(request.body.decode())
+        wiki_id = body.get('wiki_id')
+        status = body.get('status')
+        query_res = Wiki.objects.filter(id=wiki_id)
+        if len(query_res) == 0:
+            result.setData('data', 'wiki不存在')
+            return HttpResponse(str(result))
+        else:
+            w = query_res[0]
+            w.status = status
+            w.save(update_fields=status)
+            result.setOK()
+            return HttpResponse(str(result))
+
+
+@csrf_exempt
+def review_wiki(request):
+    if request.method == 'GET':
+        result = Result()
+        query_res = Wiki.objects.filter(status=0)
+        data = [{'title': w.title, 'wiki_id': w.id} for w in query_res]
+        result.setOK()
+        result.setData('data', data)
+        return HttpResponse(str(result))
