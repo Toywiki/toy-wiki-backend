@@ -47,6 +47,7 @@ class Wiki(models.Model):
 class WikiUser(models.Model):
     wiki = models.ForeignKey(Wiki, models.DO_NOTHING, db_column='Wiki_ID')  # Field name made lowercase.
     user_account = models.ForeignKey(User, models.DO_NOTHING, db_column='User_account')  # Field name made lowercase.
+    #创建：1； 修改：2
     relationship = models.IntegerField(blank=True, null=True)
 
     class Meta:

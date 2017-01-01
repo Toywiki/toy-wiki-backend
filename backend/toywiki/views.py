@@ -84,5 +84,12 @@ def save_wiki(request):
             content = wiki.get('Content')
             img = wiki.get('img')
             newWiki = Wiki(title=title, introduction=introduction, content=content, img_url=img, status=0)
-            newWikiUser = w
+            newWiki.save()
+
+            newWikiUser = WikiUser(account=account, wiki=newWiki.id, relationship=1)
+            newWikiUser.save()
+
+            result.setOK()
+
+    return HttpResponse(str(result))
 
