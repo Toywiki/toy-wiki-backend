@@ -20,13 +20,15 @@ from backend import settings
 from toywiki.views import upload_img
 from toywiki.user_views import user_register, user_login, find_celebrity
 
+from toywiki.views import upload_img, create_wiki
+
 urlpatterns = [
                   url(r'^admin/', admin.site.urls),
                   url(r'^uploadimage', upload_img),
+                  url(r'^wiki/createwiki', create_wiki),
                   url(r'^user/register', user_register),
                   url(r'^user/login', user_login),
                   url(r'^user/celebrity', find_celebrity)
-
               ] + static(
     settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT

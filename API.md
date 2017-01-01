@@ -25,11 +25,10 @@ fail:
 
 ## 2. 用户部分
 ### 2.1 用户注册
-URL:
+URL:(POST)
 ```
 /user/register
 ```
-
 Params:
 ```
 {
@@ -51,4 +50,46 @@ fail:
     'statuscode':-1(被占用)，-2(其他)
 }
 ```
+### 2.2 用户登录
+URL:(POST)
+```
+/user/login
+```
+Params:
+```
+{
+    'account':xxx
+    'pwd':xxx
+}
+```
 
+Response:
+success:
+```
+{
+    'statuscode':0
+}
+```
+fail:
+```
+{
+    'statuscode':-1,
+    'data':密码不正确/用户不存在
+}
+```
+
+### 2.3 返回三个大V
+URL:(GET)
+```
+/user/celebrity
+```
+Response:
+{
+    'statuscode':0,
+    'data':[
+        {
+            'account':xxx,
+            'port
+        }
+    ]
+}
