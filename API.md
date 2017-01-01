@@ -177,7 +177,7 @@ fail:
 
 
 ## 2. 用户部分
-### 2.1 用户注册
+#### 2.1 用户注册
 URL:(POST)
 ```
 /user/register
@@ -203,7 +203,7 @@ fail:
     'statuscode':-1(被占用)，-2(其他)
 }
 ```
-### 2.2 用户登录
+#### 2.2 用户登录
 URL:(POST)
 ```
 /user/login
@@ -231,7 +231,7 @@ fail:
 }
 ```
 
-### 2.3 用户头像
+#### 2.3 用户头像
 URL:(GET，获取用户头像URL地址)
 ```
 /user/portrait?account=xxx
@@ -269,7 +269,7 @@ fail:
 }
 ```
 
-### 2.4 查看用户简介
+#### 2.4 查看用户简介
 URL:(GET)
 ```
 /user/profile?account=xxx
@@ -278,30 +278,25 @@ Response:
 ```
 {
     'statuscode':0,
-    '1':[(用户创建、并且通过审核的词条，参照浩杰的状态码)
+    '1':[(用户创建的词条)
         {
             'wiki_id':xxx,
             'title':xxx,
             'status':xxx
         },...
     ],
-    '0':[(用户创建的，处于审核状态的词条)
+    '2':[(用户修改的词条)
         {
             'wiki_id':xxx,
             'title':xxx,
             'status':xxx,
         },...
-    ],
-    '-1':[(用户创建的、审核不通过的词条)
-        {
-            ...
-        }
     ]
 }
 ```
 
 
-### 2.5 返回三个大V
+#### 2.5 返回三个大V
 URL:(GET)
 ```
 /user/celebrity
@@ -319,53 +314,46 @@ Response:
 }
 ```
 
-<<<<<<< HEAD
-#### 1.4 保存新词条
-URL:
-```  
-http://119.29.161.184:8000/wiki/savewiki    
-```  
-Params：  
-```  
-{ 
-    "account": "用户ID",
-    "Title": "词条名字",
-    "Introduction": "词条简介",
-    "Content": "词条内容",
-    "img": "图片URL"
-}
-```  
-Response：
+#### 2.6 更新词条状态
+URL:(POST)
 ```
-success:
+/wiki/status
+```
+Params:
+```
 {
-    "statuscode": 0
+    'wiki_id':xxx,
+    'status':-1(审核不通过)、0(正在审核)、1(审核通过)
 }
-
-fail:
+```
+Response:
+success
+```
 {
-    "statuscode": -1
+    'statuscode':0
+}
+```
+fail
+```
+{
+    'statuscode':-1(词条不存在)
 }
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> 92322b2331613302e73aa4032f20a27d5e962802
-
+#### 2.7 获取需要更新的词条
+URL:(GET)
+```
+/wiki/review
+```
+Response
+```
+{
+    'statuscode':0,
+    'data':[(状态码都为0的词条)
+        {
+            'title':xxx,
+            'wiki_id':xxx
+        },...
+    ]
+}
+```
