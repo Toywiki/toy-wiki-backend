@@ -1,6 +1,6 @@
 ## 1. 词条部分
 
-#### 1.1 上传图片  
+1.1 上传图片  
 URL:  
 ```
 http://119.29.161.184:8000/uploadimage  
@@ -19,56 +19,9 @@ success:
 
 fail:
 {
-    statuscode: -1
-}
-```
-
-#### 1.2 创建词条
-URL:
-```
-http://119.29.161.184:8000/wiki/createwiki  
-```  
-Params：
-```
-{"Title": "词条名字"}
-```
-Response：
-```
-success:
-
-若存在相关词条:  
-{
-    existing:[
-        {
-            "Title":"词条1名字",
-            "ID": "词条1ID",
-            "Introduction": "简介1",
-            "img": "图片1URL"
-        },
-        {
-            "Title":"词条2名字",
-            "ID": "词条2ID",
-            "Introduction": "简介2",
-            "img": "图片2URL"
-        },
-    ]
     statuscode: 1
 }
-
-若不存在相关词条:
-{
-    statuscode: 0
-}
-
-fail:
-
-{
-    statuscode: -1
-}
-
 ```
-
-
 #### 1.3 查看词条
 URL:
 ```
@@ -91,6 +44,80 @@ fail:
 }
 ```
 
+
+## 2. 用户部分
+### 2.1 用户注册
+URL:(POST)
+```
+/user/register
+```
+Params:
+```
+{
+    'account':xxx,
+    'pwd':xxx
+}
+```
+
+Response:
+success:
+```
+{
+    'statuscode':0
+}
+```
+fail:
+```
+{
+    'statuscode':-1(被占用)，-2(其他)
+}
+```
+### 2.2 用户登录
+URL:(POST)
+```
+/user/login
+```
+Params:
+```
+{
+    'account':xxx
+    'pwd':xxx
+}
+```
+
+Response:
+success:
+```
+{
+    'statuscode':0
+}
+```
+fail:
+```
+{
+    'statuscode':-1,
+    'data':密码不正确/用户不存在
+}
+```
+
+### 2.3 返回三个大V
+URL:(GET)
+```
+/user/celebrity
+```
+Response:
+{
+    'statuscode':0,
+    'data':[
+        {
+            'account':xxx,
+            'port
+        }
+    ]
+}
+```
+
+<<<<<<< HEAD
 #### 1.4 保存新词条
 URL:
 ```  
@@ -137,4 +164,6 @@ fail:
 
 
 
+=======
+>>>>>>> 92322b2331613302e73aa4032f20a27d5e962802
 

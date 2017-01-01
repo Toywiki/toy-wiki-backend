@@ -1,0 +1,90 @@
+from django.shortcuts import render
+from django.http import HttpRequest, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from toywiki.models import User
+from toywiki.utils import Result
+
+
+@csrf_exempt
+def user_register(request):
+    if request.method == 'POST':
+        body = json.loads(request.body.decode())
+        account = body.get('account')
+        pwd = body.get('pwd')
+        print(account)
+        print(pwd)
+        result = Result()
+        if len(User.objects.filter(account=account)) == 0:
+            user = User(account=account, pwd=pwd, portrait_url='', is_admin=0, num_of_wiki=0)
+            try:
+                user.save()
+                result.setOK()
+                return HttpResponse(str(result))
+            except:
+                result.setStatusCode(-2)
+                return HttpResponse(str(result))
+        else:
+            result.setStatusCode(-1)
+            return HttpResponse(str(result))
+
+
+@csrf_exempt
+def user_login(request):
+    if request.method == 'POST':
+        result = Result()
+        body = json.loads(request.body.decode())
+        account = body.get('account')
+        pwd = body.get('pwd')
+        query_res = User.objects.filter(account=account)
+        if len(query_res) == 0:
+            result.setData('data', '用户名不存在')
+            return HttpResponse(str(result))
+        else:
+            user = query_res[0]
+            if pwd != user.password:
+                result.setData('data', '密码不正确')
+                return HttpResponse(str(result))
+            elif account == 'admin':
+                # TODO 更新result状态吗
+                return HttpResponse(str(result))
+            else:
+                result.setOK()
+                return HttpResponse(str(result))
+
+
+@csrf_exempt
+def find_celebrity(request):
+    if request.method == 'GET':
+        result = Result()
+        from django.db.models import F
+        query_res = User.objects.order_by(F('num_of_wiki').desc()).exclude(account='admin')
+        if len(query_res) > 3:
+            data = [{'account': user.account, 'portrait_url': user.portrait_url, 'num_of_wiki': user.num_of_wiki} for
+                    user in query_res[0:3]]
+
+        else:
+            data = data = [{'account': user.account, 'portrait_url': user.portrait_url, 'num_of_wiki': user.num_of_wiki}
+                           for user in query_res]
+        result.setOK()
+        result.setData('data', data)
+        return HttpResponse(str(result))
+
+
+@csrf_exempt
+def update_portrait(request):
+    if request.method == 'POST':
+        body = json.loads(request.body.decode())
+        result = Result()
+        account = body.get('account')
+        portrait_url = body.get('portrait_url')
+        query_res = User.objects.filter(account=account)
+        if len(query_res) == 0:
+            result.setData('data', '用户不存在')
+            return HttpResponse(str(result))
+        else:
+            user = query_res[0]
+            user.portrait_url = portrait_url
+            user.save(update_fields='portrait_url')
+            result.setOK()
+            return HttpResponse(str(result))
