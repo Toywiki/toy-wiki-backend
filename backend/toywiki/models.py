@@ -18,6 +18,7 @@ class Wiki(models.Model):
     title = models.CharField(max_length=45, blank=True, null=True)
     introduction = models.TextField(blank=True, null=True)
     content = models.TextField(blank=True, null=True)
+    # 审核不通过：-1； 正在审核：0,； 审核通过：1；
     status = models.IntegerField(blank=True, null=True)
     time = models.DateTimeField(blank=True, null=True)
     img_url = models.CharField(max_length=45, blank=True, null=True)
@@ -44,6 +45,7 @@ class Comment(models.Model):
 class WikiUser(models.Model):
     wiki = models.ForeignKey(Wiki, models.DO_NOTHING)
     user_account = models.ForeignKey(User, models.DO_NOTHING, db_column='user_account')
+    # 创建：1； 修改：2
     relationship = models.IntegerField(blank=True, null=True)
 
     class Meta:
