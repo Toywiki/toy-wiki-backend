@@ -22,3 +22,33 @@ fail:
     statuscode: 1
 }
 ```
+
+## 2. 用户部分
+### 2.1 用户注册
+URL:
+```
+/user/register
+```
+
+Params:
+```
+{
+    'account':xxx,
+    'pwd':xxx
+}
+```
+
+Response:
+success:
+```
+{
+    'statuscode':0
+}
+```
+fail:
+```
+{
+    'statuscode':-1(被占用)，-2(其他)
+}
+```
+
