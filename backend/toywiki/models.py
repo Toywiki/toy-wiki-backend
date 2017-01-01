@@ -1,19 +1,4 @@
-from __future__ import unicode_literals
-
 from django.db import models
-
-
-class Comment(models.Model):
-    comment_id = models.IntegerField(db_column='comment_ID')  # Field name made lowercase.
-    content = models.TextField(blank=True, null=True)
-    time = models.DateTimeField(blank=True, null=True)
-    wiki = models.ForeignKey('Wiki', models.DO_NOTHING, db_column='Wiki_ID')  # Field name made lowercase.
-    user_account = models.ForeignKey('User', models.DO_NOTHING, db_column='User_account')  # Field name made lowercase.
-
-    class Meta:
-        managed = False
-        db_table = 'comment'
-        unique_together = (('comment_id', 'wiki', 'user_account'),)
 
 
 class User(models.Model):
@@ -29,30 +14,39 @@ class User(models.Model):
 
 
 class Wiki(models.Model):
-    id = models.AutoField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=45, blank=True, null=True)
     introduction = models.TextField(blank=True, null=True)
     content = models.TextField(blank=True, null=True)
-    # 审核不通过：-1； 正在审核：0,； 审核通过：1；
     status = models.IntegerField(blank=True, null=True)
     time = models.DateTimeField(blank=True, null=True)
     img_url = models.CharField(max_length=45, blank=True, null=True)
     category = models.CharField(max_length=45, blank=True, null=True)
+    hits = models.CharField(max_length=45, blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'wiki'
 
+class Comment(models.Model):
+    comment_id = models.AutoField(primary_key=True)
+    content = models.TextField(blank=True, null=True)
+    time = models.DateTimeField(blank=True, null=True)
+    wiki = models.ForeignKey('Wiki', models.DO_NOTHING, blank=True, null=True)
+    user_account = models.ForeignKey('User', models.DO_NOTHING, db_column='user_account', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'comment'
+
+
 
 class WikiUser(models.Model):
-    wiki = models.ForeignKey(Wiki, models.DO_NOTHING, db_column='Wiki_ID')  # Field name made lowercase.
-    user_account = models.ForeignKey(User, models.DO_NOTHING, db_column='User_account')  # Field name made lowercase.
-    #创建：1； 修改：2
+    wiki = models.ForeignKey(Wiki, models.DO_NOTHING)
+    user_account = models.ForeignKey(User, models.DO_NOTHING, db_column='user_account')
     relationship = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'wiki_user'
         unique_together = (('wiki', 'user_account'),)
-
-
