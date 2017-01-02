@@ -158,7 +158,7 @@ Params：
 ```
 {
     "account": "用户ID",
-    "wiki_id": "词条ID",
+    "wiki_title": "词条名字",
     "content": "评论内容"
 }
 ```
@@ -178,7 +178,13 @@ fail:
 #### 1.7 返回讨论内容
 URL:
 ```
-http://119.29.161.184:8000/wiki/viewcomment?id=xxxx(词条id)    
+http://119.29.161.184:8000/wiki/viewcomment    
+```
+Params:
+```
+{
+    "wiki_title": "词条名字"
+}
 ```
 Response：
 ```

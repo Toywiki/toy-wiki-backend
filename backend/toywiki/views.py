@@ -41,7 +41,6 @@ def create_wiki(request):
         title = json.loads(request.body.decode()).get('title')
         if title is not None:
             existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
-            print(title)
             if len(existing) > 0:
                 result.setStatuscode(1)
                 result.setData("existing", [])
@@ -70,7 +69,7 @@ def view_wiki(request):
             result.setData("introduction", wiki.introduction)
             result.setData("content", wiki.content)
             result.setData("img", wiki.img_url)
-            wiki.hits += 1
+            wiki.hits = int(wiki.hits) + 1
             wiki.save()
             result.setOK()
 
@@ -115,7 +114,8 @@ def edit_wiki(request):
 
             oldWiki = Wiki.objects.filter(id=wiki_id)[0]
 
-            newWiki = Wiki(title=oldWiki.title, introduction=introduction, category=category, content=content, img_url=img, status=0)
+            newWiki = Wiki(title=oldWiki.title, introduction=introduction, category=category, content=content, img_url=img, status=0,
+                           hits=oldWiki.hits)
             newWiki.save()
 
             user = User.objects.filter(account=account)[0]
@@ -132,11 +132,10 @@ def comment(request):
     if request.method == "POST":
         comm = json.loads(request.body.decode())
         account = comm.get('account')
-        wiki_id = comm.get('wiki_id')
+        wiki_title = comm.get('wiki_title')
         content = comm.get('content')
-        wiki = Wiki.objects.filter(id=wiki_id)[0]
         user = User.objects.filter(account=account)[0]
-        comment_ = Comment(content=content, wiki=wiki, user_account=user)
+        comment_ = Comment(content=content, wiki=wiki_title, user_account=user)
         comment_.save()
 
         result.setOK()
@@ -147,10 +146,9 @@ def comment(request):
 @csrf_exempt
 def view_comment(request):
     result = Result()
-    if request.method == "GET":
-        id = request.GET.get('id')
-        wiki = Wiki.objects.filter(id=id)[0]
-        comments = Comment.objects.filter(wiki=wiki).order_by('time')
+    if request.method == "POST":
+        wiki_title = request.GET.get('wiki_title')
+        comments = Comment.objects.filter(wiki_title=wiki_title).order_by('time')
         result.setData("comments", [])
         for i in comments:
             result['comments'].append({"account": i.user_account.account, "content": i.content, "time": i.time})
