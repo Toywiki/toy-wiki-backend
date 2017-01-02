@@ -23,7 +23,7 @@ class Wiki(models.Model):
     time = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     img_url = models.CharField(max_length=45, blank=True, null=True)
     category = models.CharField(max_length=45, blank=True, null=True)
-    hits = models.CharField(max_length=45, blank=True, null=True)
+    hits = models.CharField(max_length=45, blank=True, null=True, default=0)
 
     class Meta:
         managed = False
