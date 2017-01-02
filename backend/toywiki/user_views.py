@@ -62,6 +62,10 @@ def update_password(request):
         account = body.get("account")
         old_pwd = body.get("old_pwd")
         new_pwd = body.get("new_pwd")
+        query_res = User.objects.filter(account=account)
+        if len(query_res) == 0:
+            result.setData("data", "用户名不存在")
+            return HttpResponse(str(result))
         user = authenticate(account=account, password=old_pwd)
         if user is not None:
             user.set_password(new_pwd)
@@ -69,7 +73,7 @@ def update_password(request):
             result.setOK()
             return HttpResponse(str(result))
         else:
-            result.setStatuscode(-1)
+            result.setData("data","密码不正确")
             return HttpResponse(str(result))
 
 
@@ -90,6 +94,7 @@ def find_celebrity(request):
 
 
 @csrf_exempt
+@login_required()
 def user_portrait(request):
     result = Result()
     if request.method == "POST":
@@ -115,25 +120,21 @@ def user_portrait(request):
 
 
 @csrf_exempt
-@login_required()
 def view_profile(request):
     if request.method == "GET":
         result = Result()
         account = request.GET.get("account")
-        query_res = User.objects.filter(account=account)
-        if len(query_res) == 0:
+        if request.user.is_authenticated:
+            data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
+                    Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=1).select_related()]
+            result.setData("1", data)
+            data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
+                    Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=2).select_related()]
+            result.setData("2", data)
+            result.setOK()
             return HttpResponse(str(result))
         else:
-            # TODO 连接查询
-            data=[ for w in ]
-            # data=[{"wiki_id":w.,"t"} for w in User.objects.filter(WikiUser__Wiki__user_account=account,wikiuser__relationship=1).all()]
-            # data = [{"wiki_id": w.wiki_id, "title": w.wiki.title, "status": w.wiki.status} for w in
-            #         WikiUser.objects.filter(Wiki__User_account=account, relationship=1).all()]
-            # result.setData("1", data)
-            # data = [{"wiki_id": w.wiki_id, "title": w.wiki.title, "status": w.wiki.status} for w in
-            #         WikiUser.objects.filter(Wiki__User_account=account, relationship=2).all()]
-            # result.setData("2", data)
-            result.setOK()
+            result.setStatuscode(-1)
             return HttpResponse(str(result))
 
 
@@ -141,32 +142,36 @@ def view_profile(request):
 def review_wiki(request):
     if request.method == "GET":
         result = Result()
-        query_res = Wiki.objects.filter(status=0)
-        data = [{"title": w.title, "wiki_id": w.id} for w in query_res]
+        data = [{"title": w.title, "wiki_id": w.id} for w in Wiki.objects.filter(status=0)]
         result.setOK()
         result.setData("data", data)
         return HttpResponse(str(result))
 
 
-def superuser_check(user):
-    return user.is_superuser
 
 
 @csrf_exempt
-@user_passes_test(superuser_check)
 def update_wiki_status(request):
     if request.method == "POST":
         result = Result()
-        body = json.loads(request.body.decode())
-        wiki_id = body.get("wiki_id")
-        status = body.get("status")
-        query_res = Wiki.objects.filter(id=wiki_id)
-        if len(query_res) == 0:
-            result.setData("data", "wiki不存在")
+        if request.user.is_authenticated and request.user.is_superuser:
+            body = json.loads(request.body.decode())
+            wiki_id = body.get("wiki_id")
+            status = body.get("status")
+            query_res = Wiki.objects.filter(id=wiki_id)
+            if len(query_res) == 0:
+                result.setData("data", "wiki不存在")
+                return HttpResponse(str(result))
+            else:
+                w = query_res[0]
+                w.status = status
+                w.save(update_fields=["status"])
+                result.setOK()
+                return HttpResponse(str(result))
+        elif request.user.is_authenticated:
+            result.setData("data","不是管理员")
             return HttpResponse(str(result))
         else:
-            w = query_res[0]
-            w.status = status
-            w.save(update_fields=["status"])
-            result.setOK()
+            result.setData("data","未登录")
             return HttpResponse(str(result))
+
