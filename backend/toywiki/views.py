@@ -96,6 +96,10 @@ def save_wiki(request):
                 newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
                 newWikiUser.save()
                 result.setOK()
+            else:
+                newWiki.delete()
+                newWiki.save()
+
 
     return HttpResponse(json.dumps(result))
 
