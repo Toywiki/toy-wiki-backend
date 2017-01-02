@@ -16,20 +16,21 @@ def upload_img(request):
     if request.method == "POST":
 
         img = request.FILES.get("file")
-        existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT) ))
-        filename = str(uuid4())
-        while filename in existingFiles:
+        if img is not None:
+            existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT) ))
             filename = str(uuid4())
+            while filename in existingFiles:
+                filename = str(uuid4())
 
-        filename = filename + "." + str(img).split(".")[-1]
+            filename = filename + "." + str(img).split(".")[-1]
 
-        #将图片存到media
-        with open(os.path.join(MEDIA_ROOT, filename), "wb") as f:
-            for chunk in img.chunks():
-                f.write(chunk)
+            #将图片存到media
+            with open(os.path.join(MEDIA_ROOT, filename), "wb") as f:
+                for chunk in img.chunks():
+                    f.write(chunk)
 
-        result.setData("url", "/media/"+filename)
-        result.setOK()
+            result.setData("url", "/media/"+filename)
+            result.setOK()
 
     return HttpResponse(str(result))
 
@@ -38,22 +39,21 @@ def create_wiki(request):
     result = Result()
     if request.method == "POST":
         title = json.loads(request.body.decode()).get('title')
+        if title is not None:
+            existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
+            if len(existing) > 0:
+                result.setStatuscode(1)
+                result.setData("existing", [])
 
-        existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
+                temp = set()
 
-        if len(existing) > 0:
-            result.setStatuscode(1)
-            result.setData("existing", [])
-
-            temp = set()
-
-            for i in existing[::-1]:
-                if i.title not in temp:
-                    result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
-                                           "img": i.img_url})
-                    temp.add(i.title)
-        else:
-            result.setStatuscode(0)
+                for i in existing[::-1]:
+                    if i.title not in temp:
+                        result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
+                                               "img": i.img_url})
+                        temp.add(i.title)
+            else:
+                result.setStatuscode(0)
 
     return HttpResponse(str(result))
 
@@ -69,7 +69,7 @@ def view_wiki(request):
             result.setData("introduction", wiki.introduction)
             result.setData("content", wiki.content)
             result.setData("img", wiki.img_url)
-            wiki.hits += 1
+            wiki.hits = int(wiki.hits) + 1
             wiki.save()
             result.setOK()
 
@@ -90,11 +90,12 @@ def save_wiki(request):
             newWiki = Wiki(title=title, introduction=introduction, category=category, content=content, img_url=img, status=0)
             newWiki.save()
 
-            user = User.objects.filter(account=account)[0]
-            newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
-            newWikiUser.save()
-
-            result.setOK()
+            user = User.objects.filter(account=account)
+            if len(user) > 0:
+                user = user[0]
+                newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
+                newWikiUser.save()
+                result.setOK()
 
     return HttpResponse(str(result))
 
@@ -113,7 +114,8 @@ def edit_wiki(request):
 
             oldWiki = Wiki.objects.filter(id=wiki_id)[0]
 
-            newWiki = Wiki(title=oldWiki.title, introduction=introduction, category=category, content=content, img_url=img, status=0)
+            newWiki = Wiki(title=oldWiki.title, introduction=introduction, category=category, content=content, img_url=img, status=0,
+                           hits=oldWiki.hits)
             newWiki.save()
 
             user = User.objects.filter(account=account)[0]
@@ -130,11 +132,10 @@ def comment(request):
     if request.method == "POST":
         comm = json.loads(request.body.decode())
         account = comm.get('account')
-        wiki_id = comm.get('wiki_id')
+        wiki_title = comm.get('wiki_title')
         content = comm.get('content')
-        wiki = Wiki.objects.filter(id=wiki_id)[0]
         user = User.objects.filter(account=account)[0]
-        comment_ = Comment(content=content, wiki=wiki, user_account=user)
+        comment_ = Comment(content=content, wiki=wiki_title, user_account=user)
         comment_.save()
 
         result.setOK()
@@ -145,10 +146,9 @@ def comment(request):
 @csrf_exempt
 def view_comment(request):
     result = Result()
-    if request.method == "GET":
-        id = request.GET.get('id')
-        wiki = Wiki.objects.filter(id=id)[0]
-        comments = Comment.objects.filter(wiki=wiki).order_by('time')
+    if request.method == "POST":
+        wiki_title = request.GET.get('wiki_title')
+        comments = Comment.objects.filter(wiki_title=wiki_title).order_by('time')
         result.setData("comments", [])
         for i in comments:
             result['comments'].append({"account": i.user_account.account, "content": i.content, "time": i.time})
