@@ -135,7 +135,7 @@ def comment(request):
         wiki_title = comm.get('wiki_title')
         content = comm.get('content')
         user = User.objects.filter(account=account)[0]
-        comment_ = Comment(content=content, wiki=wiki_title, user_account=user)
+        comment_ = Comment(content=content, wiki_title=wiki_title, user_account=user)
         comment_.save()
 
         result.setOK()
@@ -147,7 +147,7 @@ def comment(request):
 def view_comment(request):
     result = Result()
     if request.method == "POST":
-        wiki_title = request.GET.get('wiki_title')
+        wiki_title = json.loads(request.body.decode()).get('wiki_title')
         comments = Comment.objects.filter(wiki_title=wiki_title).order_by('time')
         result.setData("comments", [])
         for i in comments:
