@@ -19,10 +19,9 @@ def user_register(request):
             user = User.objects.create_user(account=account, password=pwd)
             user.save()
             result.setOK()
-            return HttpResponse(str(result))
         else:
             result.setStatusCode(-1)
-        return HttpResponse(str(result))
+        return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -35,15 +34,15 @@ def user_login(request):
         query_res = User.objects.filter(account=account)
         if len(query_res) == 0:
             result.setData("data", "用户名不存在")
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
         user = authenticate(account=account, password=pwd)
         if user is not None:
             result.setOK()
             login(request, user)
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
         else:
             result.setData("data", "密码不正确")
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -51,7 +50,7 @@ def user_logout(request):
     result = Result()
     logout(request)
     result.setOK()
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -65,16 +64,16 @@ def update_password(request):
         query_res = User.objects.filter(account=account)
         if len(query_res) == 0:
             result.setData("data", "用户名不存在")
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
         user = authenticate(account=account, password=old_pwd)
         if user is not None:
             user.set_password(new_pwd)
             user.save()
             result.setOK()
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
         else:
             result.setData("data","密码不正确")
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -90,7 +89,7 @@ def find_celebrity(request):
                     for user in query_res]
         result.setOK()
         result.setData("data", data)
-        return HttpResponse(str(result))
+        return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -103,20 +102,20 @@ def user_portrait(request):
         portrait_url = body.get("portrait_url")
         query_res = User.objects.filter(account=account)
         if len(query_res) == 0:
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
         else:
             user = query_res[0]
             print(portrait_url)
             user.portrait_url = portrait_url
             user.save(update_fields=["portrait_url"])
             result.setOK()
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
     if request.method == "GET":
         account = request.GET.get("account")
         query_res = User.objects.filter(account=account).get()
         result.setOK()
         result.setData("portrait_url", query_res.portrait_url)
-        return HttpResponse(str(result))
+        return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -132,10 +131,10 @@ def view_profile(request):
                     Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=2).select_related()]
             result.setData("2", data)
             result.setOK()
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
         else:
             result.setStatuscode(-1)
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -145,7 +144,7 @@ def review_wiki(request):
         data = [{"title": w.title, "wiki_id": w.id} for w in Wiki.objects.filter(status=0)]
         result.setOK()
         result.setData("data", data)
-        return HttpResponse(str(result))
+        return HttpResponse(json.dumps(result))
 
 
 
@@ -161,17 +160,17 @@ def update_wiki_status(request):
             query_res = Wiki.objects.filter(id=wiki_id)
             if len(query_res) == 0:
                 result.setData("data", "wiki不存在")
-                return HttpResponse(str(result))
+                return HttpResponse(json.dumps(result))
             else:
                 w = query_res[0]
                 w.status = status
                 w.save(update_fields=["status"])
                 result.setOK()
-                return HttpResponse(str(result))
+                return HttpResponse(json.dumps(result))
         elif request.user.is_authenticated:
             result.setData("data","不是管理员")
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
         else:
             result.setData("data","未登录")
-            return HttpResponse(str(result))
+            return HttpResponse(json.dumps(result))
 

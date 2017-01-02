@@ -32,7 +32,7 @@ def upload_img(request):
             result.setData("url", "/media/"+filename)
             result.setOK()
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def create_wiki(request):
@@ -55,7 +55,7 @@ def create_wiki(request):
             else:
                 result.setStatuscode(0)
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def view_wiki(request):
@@ -73,7 +73,7 @@ def view_wiki(request):
             wiki.save()
             result.setOK()
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def save_wiki(request):
@@ -97,7 +97,7 @@ def save_wiki(request):
                 newWikiUser.save()
                 result.setOK()
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def edit_wiki(request):
@@ -124,7 +124,7 @@ def edit_wiki(request):
 
             result.setOK()
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def comment(request):
@@ -141,7 +141,7 @@ def comment(request):
         result.setOK()
 
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def view_comment(request):
@@ -155,7 +155,7 @@ def view_comment(request):
 
         result.setOK()
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def search_wiki_title(request):
@@ -179,7 +179,7 @@ def search_wiki_title(request):
         else:
             result.setStatuscode(0)
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 @csrf_exempt
 def search_wiki_category(request):
@@ -203,7 +203,7 @@ def search_wiki_category(request):
         else:
             result.setStatuscode(0)
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
 
 
 @csrf_exempt
@@ -222,4 +222,4 @@ def hot_wiki(request):
                     result['wikis'].append({"id": i.id, "title": i.title, "img": i.img_url})
         result.setOK()
 
-    return HttpResponse(str(result))
+    return HttpResponse(json.dumps(result))
