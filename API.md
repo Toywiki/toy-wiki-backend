@@ -358,7 +358,7 @@ success:
 fail:
 ```
 {
-    "statuscode":-1(被占用)，-2(其他)
+    "statuscode":-1(被占用)
 }
 ```
 #### 2.2 用户登录
@@ -378,7 +378,7 @@ Response:
 success:
 ```
 {
-    "statuscode":0(普通用户)/1(管理员)
+    "statuscode":0
 }
 ```
 fail:
@@ -389,7 +389,47 @@ fail:
 }
 ```
 
-#### 2.3 用户头像
+#### 2.3 退出登录
+URL:(GET)
+```
+/user/logout
+```
+Response:
+```
+{
+    "statuscode":0
+}
+```
+
+#### 2.4 修改密码
+URL:(POST)
+```
+/user/password
+```
+Params:
+```
+{
+    "account":xxx,
+    "old_pwd":xxx,
+    "new_pwd":xxx,
+}
+```
+Response:
+success
+```
+{
+    "statuscode":0
+}
+```
+fail
+```
+{
+    "statuscode":-1,
+    "data":用户名不存在/密码不正确
+}
+```
+
+#### 2.5 用户头像
 URL:(GET，获取用户头像URL地址)
 ```
 /user/portrait?account=xxx
@@ -402,7 +442,7 @@ Response:
 }
 ```
 
-URL:(POST，更新用户头像地址)
+URL:(POST，更新用户头像地址，要求用户已登录)
 ```
 /user/portrait
 ```
@@ -427,23 +467,24 @@ fail:
 }
 ```
 
-#### 2.4 查看用户简介(实现有问题，需要修改)
-URL:(GET)
+#### 2.6 查看用户简介
+URL:(GET，要求用户已登录)
 ```
 /user/profile?account=xxx
 ```
 Response:
+success
 ```
 {
     "statuscode":0,
-    "1":[(用户创建的词条)
+    "1":[(用户参与创建的词条)
         {
             "wiki_id":xxx,
             "title":xxx,
             "status":xxx
         },...
     ],
-    "2":[(用户修改的词条)
+    "2":[(用户参与修改的词条)
         {
             "wiki_id":xxx,
             "title":xxx,
@@ -452,9 +493,15 @@ Response:
     ]
 }
 ```
+fail
+```
+{
+    "statuscode":-1(用户未登录)
+}
+```
 
 
-#### 2.5 返回三个大V
+#### 2.7 返回三个大V
 URL:(GET)
 ```
 /user/celebrity
@@ -473,8 +520,8 @@ Response:
 }
 ```
 
-#### 2.6 更新词条状态
-URL:(POST)
+#### 2.8 更新词条状态
+URL:(POST，要求用户已登录，并且是管理员)
 ```
 /wiki/status
 ```
@@ -495,11 +542,12 @@ success
 fail
 ```
 {
-    "statuscode":-1(词条不存在)
+    "statuscode":-1
+    "data":wiki不存在/用户未登录/用户不是管理员
 }
 ```
 
-#### 2.7 获取需要更新的词条
+#### 2.9 获取需要更新的词条
 URL:(GET)
 ```
 /wiki/review
