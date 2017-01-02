@@ -337,8 +337,8 @@ URL:(POST)
 Params:
 ```
 {
-    'account':xxx,
-    'pwd':xxx
+    "account":xxx,
+    "pwd":xxx
 }
 ```
 
@@ -346,13 +346,13 @@ Response:
 success:
 ```
 {
-    'statuscode':0
+    "statuscode":0
 }
 ```
 fail:
 ```
 {
-    'statuscode':-1(被占用)，-2(其他)
+    "statuscode":-1(被占用)，-2(其他)
 }
 ```
 #### 2.2 用户登录
@@ -363,8 +363,8 @@ URL:(POST)
 Params:
 ```
 {
-    'account':xxx
-    'pwd':xxx
+    "account":xxx
+    "pwd":xxx
 }
 ```
 
@@ -372,14 +372,14 @@ Response:
 success:
 ```
 {
-    'statuscode':0
+    "statuscode":0(普通用户)/1(管理员)
 }
 ```
 fail:
 ```
 {
-    'statuscode':-1,
-    'data':密码不正确/用户不存在
+    "statuscode":-1,
+    "data":密码不正确/用户名不存在
 }
 ```
 
@@ -391,8 +391,8 @@ URL:(GET，获取用户头像URL地址)
 Response:
 ```
 {
-    'statuscode':0,
-    'portrait':xxx
+    "statuscode":0,
+    "portrait_url":xxx
 }
 ```
 
@@ -403,21 +403,21 @@ URL:(POST，更新用户头像地址)
 Params:
 ```
 {
-    'account':xxx,
-    'portrait_url':xxx,
+    "account":xxx,
+    "portrait_url":xxx,
 }
 ```
 Response:
 success
 ```
 {
-    'statuscode':0
+    "statuscode":0
 }
 ```
 fail:
 ```
 {
-    'statuscode':-1(用户不存在)
+    "statuscode":-1(用户不存在)
 }
 ```
 
@@ -429,19 +429,19 @@ URL:(GET)
 Response:
 ```
 {
-    'statuscode':0,
-    '1':[(用户创建的词条)
+    "statuscode":0,
+    "1":[(用户创建的词条)
         {
-            'wiki_id':xxx,
-            'title':xxx,
-            'status':xxx
+            "wiki_id":xxx,
+            "title":xxx,
+            "status":xxx
         },...
     ],
-    '2':[(用户修改的词条)
+    "2":[(用户修改的词条)
         {
-            'wiki_id':xxx,
-            'title':xxx,
-            'status':xxx,
+            "wiki_id":xxx,
+            "title":xxx,
+            "status":xxx,
         },...
     ]
 }
@@ -456,12 +456,13 @@ URL:(GET)
 Response:
 ```
 {
-    'statuscode':0,
-    'data':[
+    "statuscode":0,
+    "data":[(按照创建词条数降序排列，共有三个)
         {
-            'account':xxx,
-            'port
-        }
+            "account":xxx,
+            "portrait_url":xxx,
+            "num_of_wiki":xxx,
+        },...
     ]
 }
 ```
@@ -474,21 +475,21 @@ URL:(POST)
 Params:
 ```
 {
-    'wiki_id':xxx,
-    'status':-1(审核不通过)、0(正在审核)、1(审核通过)
+    "wiki_id":xxx,
+    "status":-1(审核不通过)、0(正在审核)、1(审核通过)
 }
 ```
 Response:
 success
 ```
 {
-    'statuscode':0
+    "statuscode":0
 }
 ```
 fail
 ```
 {
-    'statuscode':-1(词条不存在)
+    "statuscode":-1(词条不存在)
 }
 ```
 
@@ -500,11 +501,11 @@ URL:(GET)
 Response
 ```
 {
-    'statuscode':0,
-    'data':[(状态码都为0的词条)
+    "statuscode":0,
+    "data":[(状态码都为0的词条)
         {
-            'title':xxx,
-            'wiki_id':xxx
+            "title":xxx,
+            "wiki_id":xxx
         },...
     ]
 }
