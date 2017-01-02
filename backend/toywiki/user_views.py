@@ -124,7 +124,6 @@ def update_wiki_status(request):
         query_res = Wiki.objects.filter(id=wiki_id)
         if len(query_res) == 0:
             result.setData("data", "wiki不存在")
-            # TODO 更新评论对应的wiki_id
             return HttpResponse(str(result))
         else:
             w = query_res[0]
