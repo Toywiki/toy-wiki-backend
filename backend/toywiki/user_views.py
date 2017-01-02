@@ -15,8 +15,9 @@ def user_register(request):
         account = body.get("account")
         pwd = body.get("pwd")
         result = Result()
+        default_partrait = "/media/1.png"
         if len(User.objects.filter(account=account)) == 0:
-            user = User.objects.create_user(account=account, password=pwd)
+            user = User.objects.create_user(account=account, password=pwd, portrait_url=default_partrait)
             user.save()
             result.setOK()
         else:
@@ -72,7 +73,7 @@ def update_password(request):
             result.setOK()
             return HttpResponse(json.dumps(result))
         else:
-            result.setData("data","密码不正确")
+            result.setData("data", "密码不正确")
             return HttpResponse(json.dumps(result))
 
 
@@ -147,8 +148,6 @@ def review_wiki(request):
         return HttpResponse(json.dumps(result))
 
 
-
-
 @csrf_exempt
 def update_wiki_status(request):
     if request.method == "POST":
@@ -168,9 +167,8 @@ def update_wiki_status(request):
                 result.setOK()
                 return HttpResponse(json.dumps(result))
         elif request.user.is_authenticated:
-            result.setData("data","不是管理员")
+            result.setData("data", "不是管理员")
             return HttpResponse(json.dumps(result))
         else:
-            result.setData("data","未登录")
+            result.setData("data", "未登录")
             return HttpResponse(json.dumps(result))
-
