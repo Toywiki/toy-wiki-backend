@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'toywiki',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -125,5 +128,5 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.abspath('./media')
 MEDIA_URL = '/media/'
 AUTH_USER_MODEL = 'toywiki.User'
-SESSION_ENGINE = 'django.contrib.sessions.backends.file'
-#SESSION_FILE_PATH = '/session/file'
+CORS_ORIGIN_ALLOW_ALL=True
+
