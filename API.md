@@ -427,7 +427,7 @@ fail:
 }
 ```
 
-#### 2.4 查看用户简介
+#### 2.4 查看用户简介(实现有问题，需要修改)
 URL:(GET)
 ```
 /user/profile?account=xxx
