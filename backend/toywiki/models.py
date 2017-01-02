@@ -20,7 +20,7 @@ class Wiki(models.Model):
     content = models.TextField(blank=True, null=True)
     # 审核不通过：-1； 正在审核：0,； 审核通过：1；
     status = models.IntegerField(blank=True, null=True)
-    time = models.DateTimeField(blank=True, null=True)
+    time = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     img_url = models.CharField(max_length=45, blank=True, null=True)
     category = models.CharField(max_length=45, blank=True, null=True)
     hits = models.CharField(max_length=45, blank=True, null=True)
@@ -32,7 +32,7 @@ class Wiki(models.Model):
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
     content = models.TextField(blank=True, null=True)
-    time = models.DateTimeField(blank=True, null=True, auto_now=True)
+    time = models.DateField(blank=True, null=True, auto_now=True)
     wiki = models.ForeignKey('Wiki', models.DO_NOTHING, blank=True, null=True)
     user_account = models.ForeignKey('User', models.DO_NOTHING, db_column='user_account', blank=True, null=True)
 

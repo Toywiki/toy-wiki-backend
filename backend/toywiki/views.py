@@ -16,20 +16,21 @@ def upload_img(request):
     if request.method == "POST":
 
         img = request.FILES.get("file")
-        existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT) ))
-        filename = str(uuid4())
-        while filename in existingFiles:
+        if img is not None:
+            existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT) ))
             filename = str(uuid4())
+            while filename in existingFiles:
+                filename = str(uuid4())
 
-        filename = filename + "." + str(img).split(".")[-1]
+            filename = filename + "." + str(img).split(".")[-1]
 
-        #将图片存到media
-        with open(os.path.join(MEDIA_ROOT, filename), "wb") as f:
-            for chunk in img.chunks():
-                f.write(chunk)
+            #将图片存到media
+            with open(os.path.join(MEDIA_ROOT, filename), "wb") as f:
+                for chunk in img.chunks():
+                    f.write(chunk)
 
-        result.setData("url", "/media/"+filename)
-        result.setOK()
+            result.setData("url", "/media/"+filename)
+            result.setOK()
 
     return HttpResponse(str(result))
 
@@ -38,22 +39,22 @@ def create_wiki(request):
     result = Result()
     if request.method == "POST":
         title = json.loads(request.body.decode()).get('title')
+        if title is not None:
+            existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
+            print(title)
+            if len(existing) > 0:
+                result.setStatuscode(1)
+                result.setData("existing", [])
 
-        existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
+                temp = set()
 
-        if len(existing) > 0:
-            result.setStatuscode(1)
-            result.setData("existing", [])
-
-            temp = set()
-
-            for i in existing[::-1]:
-                if i.title not in temp:
-                    result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
-                                           "img": i.img_url})
-                    temp.add(i.title)
-        else:
-            result.setStatuscode(0)
+                for i in existing[::-1]:
+                    if i.title not in temp:
+                        result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
+                                               "img": i.img_url})
+                        temp.add(i.title)
+            else:
+                result.setStatuscode(0)
 
     return HttpResponse(str(result))
 
@@ -90,11 +91,12 @@ def save_wiki(request):
             newWiki = Wiki(title=title, introduction=introduction, category=category, content=content, img_url=img, status=0)
             newWiki.save()
 
-            user = User.objects.filter(account=account)[0]
-            newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
-            newWikiUser.save()
-
-            result.setOK()
+            user = User.objects.filter(account=account)
+            if len(user) > 0:
+                user = user[0]
+                newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
+                newWikiUser.save()
+                result.setOK()
 
     return HttpResponse(str(result))
 

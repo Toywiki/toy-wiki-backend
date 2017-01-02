@@ -7,7 +7,7 @@ http://119.29.161.184:8000/uploadimage
 ```
 Params：  
 ```
-FILE
+file
 ```
 Response：  
 ```
