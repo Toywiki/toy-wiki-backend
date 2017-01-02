@@ -111,7 +111,8 @@ Response：
 ```
 success:
 {
-    "statuscode": 0
+    "statuscode": 0,
+    "wiki_id":xxx,
 }
 
 fail:
