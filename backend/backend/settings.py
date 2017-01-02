@@ -124,3 +124,6 @@ STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.abspath('./media')
 MEDIA_URL = '/media/'
+AUTH_USER_MODEL = 'toywiki.User'
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+#SESSION_FILE_PATH = '/session/file'
