@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -15,17 +16,13 @@ def user_register(request):
         pwd = body.get("pwd")
         result = Result()
         if len(User.objects.filter(account=account)) == 0:
-            user = User(account=account, password=pwd, portrait_url="", is_admin=0, num_of_wiki=0)
-            try:
-                user.save()
-                result.setOK()
-                return HttpResponse(str(result))
-            except:
-                result.setStatusCode(-2)
-                return HttpResponse(str(result))
+            user = User.objects.create_user(account=account, password=pwd)
+            user.save()
+            result.setOK()
+            return HttpResponse(str(result))
         else:
             result.setStatusCode(-1)
-            return HttpResponse(str(result))
+        return HttpResponse(str(result))
 
 
 @csrf_exempt
@@ -39,24 +36,48 @@ def user_login(request):
         if len(query_res) == 0:
             result.setData("data", "用户名不存在")
             return HttpResponse(str(result))
+        user = authenticate(account=account, password=pwd)
+        if user is not None:
+            result.setOK()
+            login(request, user)
+            return HttpResponse(str(result))
         else:
-            user = query_res[0]
-            if pwd != user.password:
-                result.setData("data", "密码不正确")
-                return HttpResponse(str(result))
-            elif account == "admin":
-                result.setStatuscode(1)
-                return HttpResponse(str(result))
-            else:
-                result.setOK()
-                return HttpResponse(str(result))
+            result.setData("data", "密码不正确")
+            return HttpResponse(str(result))
+
+
+@csrf_exempt
+def user_logout(request):
+    result = Result()
+    logout(request)
+    result.setOK()
+    return HttpResponse(str(result))
+
+
+@csrf_exempt
+def update_password(request):
+    if request.method == "POST":
+        result = Result()
+        body = json.loads(request.body.decode())
+        account = body.get("account")
+        old_pwd = body.get("old_pwd")
+        new_pwd = body.get("new_pwd")
+        user = authenticate(account=account, password=old_pwd)
+        if user is not None:
+            user.set_password(new_pwd)
+            user.save()
+            result.setOK()
+            return HttpResponse(str(result))
+        else:
+            result.setStatuscode(-1)
+            return HttpResponse(str(result))
 
 
 @csrf_exempt
 def find_celebrity(request):
     if request.method == "GET":
         result = Result()
-        query_res = User.objects.order_by(F("num_of_wiki").desc()).exclude(account="admin")
+        query_res = User.objects.order_by(F("num_of_wiki").desc()).exclude(is_superuser=1)
         if len(query_res) > 3:
             data = [{"account": user.account, "portrait_url": user.portrait_url, "num_of_wiki": user.num_of_wiki} for
                     user in query_res[0:3]]
@@ -94,6 +115,7 @@ def user_portrait(request):
 
 
 @csrf_exempt
+@login_required()
 def view_profile(request):
     if request.method == "GET":
         result = Result()
@@ -103,18 +125,35 @@ def view_profile(request):
             return HttpResponse(str(result))
         else:
             # TODO 连接查询
-            #data=[{"wiki_id":w.,"t"} for w in User.objects.filter(WikiUser__Wiki__user_account=account,wikiuser__relationship=1).all()]
+            data=[ for w in ]
+            # data=[{"wiki_id":w.,"t"} for w in User.objects.filter(WikiUser__Wiki__user_account=account,wikiuser__relationship=1).all()]
             # data = [{"wiki_id": w.wiki_id, "title": w.wiki.title, "status": w.wiki.status} for w in
             #         WikiUser.objects.filter(Wiki__User_account=account, relationship=1).all()]
             # result.setData("1", data)
             # data = [{"wiki_id": w.wiki_id, "title": w.wiki.title, "status": w.wiki.status} for w in
             #         WikiUser.objects.filter(Wiki__User_account=account, relationship=2).all()]
-            #result.setData("2", data)
+            # result.setData("2", data)
             result.setOK()
             return HttpResponse(str(result))
 
 
 @csrf_exempt
+def review_wiki(request):
+    if request.method == "GET":
+        result = Result()
+        query_res = Wiki.objects.filter(status=0)
+        data = [{"title": w.title, "wiki_id": w.id} for w in query_res]
+        result.setOK()
+        result.setData("data", data)
+        return HttpResponse(str(result))
+
+
+def superuser_check(user):
+    return user.is_superuser
+
+
+@csrf_exempt
+@user_passes_test(superuser_check)
 def update_wiki_status(request):
     if request.method == "POST":
         result = Result()
@@ -131,14 +170,3 @@ def update_wiki_status(request):
             w.save(update_fields=["status"])
             result.setOK()
             return HttpResponse(str(result))
-
-
-@csrf_exempt
-def review_wiki(request):
-    if request.method == "GET":
-        result = Result()
-        query_res = Wiki.objects.filter(status=0)
-        data = [{"title": w.title, "wiki_id": w.id} for w in query_res]
-        result.setOK()
-        result.setData("data", data)
-        return HttpResponse(str(result))
