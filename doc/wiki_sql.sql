@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`wiki` (
   `title` VARCHAR(45) NULL,
   `introduction` TEXT NULL,
   `content` TEXT NULL,
-  `status` INT NULL,
+  `status` INT NOT NULL DEFAULT 0,
   `time` DATETIME NULL,
   `img_url` VARCHAR(45) NULL,
   `category` VARCHAR(45) NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`user` (
   `password` VARCHAR(250) NULL,
   `portrait_url` VARCHAR(45) NULL,
   `last_login` DATETIME NULL,
-  `is_superuser` TINYINT(1) NULL,
+  `is_admin` TINYINT(1) NULL,
   `num_of_wiki` INT NULL DEFAULT 0,
   PRIMARY KEY (`account`))
 ENGINE = InnoDB;
