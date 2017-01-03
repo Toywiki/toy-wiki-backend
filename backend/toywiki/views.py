@@ -18,9 +18,9 @@ def upload_img(request):
         img = request.FILES.get("file")
         if img is not None:
             existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT) ))
-            filename = str(uuid4())
+            filename = "".join(str(uuid4()).split('-')[:3])
             while filename in existingFiles:
-                filename = str(uuid4())
+                filename = "".join(str(uuid4()).split('-')[:3])
 
             filename = filename + "." + str(img).split(".")[-1]
 
