@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`user` (
   `portrait_url` VARCHAR(45) NULL,
   `last_login` DATETIME NULL,
   `is_admin` TINYINT(1) NULL,
-  `num_of_wiki` INT NULL DEFAULT 0,
+  `num_of_wiki` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`account`))
 ENGINE = InnoDB;
 
