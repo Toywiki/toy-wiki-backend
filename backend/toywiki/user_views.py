@@ -18,7 +18,7 @@ def user_register(request):
         result = Result()
         default_partrait = "/media/default.png"
         if len(User.objects.filter(account=account)) == 0:
-            user = User.objects.create_user(account=account, password=pwd, portrait_url=default_partrait)
+            user = User.objects.create_user(account=account, password=pwd, portrait_url=default_partrait,num_of_wiki=0)
             user.save()
             result.setOK()
         else:
@@ -125,10 +125,10 @@ def view_profile(request):
         account = request.GET.get("account")
         data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
                 Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=1).select_related()]
-        result.setData("1", data)
+        result.setData("create", data)
         data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
                 Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=2).select_related()]
-        result.setData("2", data)
+        result.setData("modified", data)
         result.setOK()
         return HttpResponse(json.dumps(result))
 

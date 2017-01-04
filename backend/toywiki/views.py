@@ -7,6 +7,8 @@ from uuid import uuid4
 from toywiki.utils import Result
 import os
 import json
+
+
 # Create your views here.
 
 @csrf_exempt
@@ -17,22 +19,23 @@ def upload_img(request):
 
         img = request.FILES.get("file")
         if img is not None:
-            existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT) ))
+            existingFiles = set(map(lambda str: str.split('.')[0], os.listdir(MEDIA_ROOT)))
             filename = "".join(str(uuid4()).split('-')[:3])
             while filename in existingFiles:
                 filename = "".join(str(uuid4()).split('-')[:3])
 
             filename = filename + "." + str(img).split(".")[-1]
 
-            #将图片存到media
+            # 将图片存到media
             with open(os.path.join(MEDIA_ROOT, filename), "wb") as f:
                 for chunk in img.chunks():
                     f.write(chunk)
 
-            result.setData("url", "/media/"+filename)
+            result.setData("url", "/media/" + filename)
             result.setOK()
 
     return HttpResponse(json.dumps(result))
+
 
 @csrf_exempt
 def create_wiki(request):
@@ -50,12 +53,13 @@ def create_wiki(request):
                 for i in existing[::-1]:
                     if i.title not in temp:
                         result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
-                                               "img": i.img_url})
+                                                   "img": i.img_url})
                         temp.add(i.title)
             else:
                 result.setStatuscode(0)
 
     return HttpResponse(json.dumps(result))
+
 
 @csrf_exempt
 def view_wiki(request):
@@ -76,6 +80,7 @@ def view_wiki(request):
 
     return HttpResponse(json.dumps(result))
 
+
 @csrf_exempt
 def save_wiki(request):
     result = Result()
@@ -88,22 +93,25 @@ def save_wiki(request):
             category = wiki.get('category')
             content = wiki.get('content')
             img = wiki.get('img')
-            newWiki = Wiki(title=title, introduction=introduction, category=category, content=content, img_url=img, status=0)
+            newWiki = Wiki(title=title, introduction=introduction, category=category, content=content, img_url=img,
+                           status=0)
             newWiki.save()
 
             user = User.objects.filter(account=account)
             if len(user) > 0:
                 user = user[0]
+                user.num_of_wiki+=1
+                user.save()
                 newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
                 newWikiUser.save()
-                result.setData('wiki_id',newWiki.id)
+                result.setData('wiki_id', newWiki.id)
                 result.setOK()
             else:
                 newWiki.delete()
                 newWiki.save()
 
-
     return HttpResponse(json.dumps(result))
+
 
 @csrf_exempt
 def edit_wiki(request):
@@ -120,7 +128,8 @@ def edit_wiki(request):
 
             oldWiki = Wiki.objects.filter(id=wiki_id)[0]
 
-            newWiki = Wiki(title=oldWiki.title, introduction=introduction, category=category, content=content, img_url=img, status=0,
+            newWiki = Wiki(title=oldWiki.title, introduction=introduction, category=category, content=content,
+                           img_url=img, status=0,
                            hits=oldWiki.hits)
             newWiki.save()
 
@@ -131,6 +140,7 @@ def edit_wiki(request):
             result.setOK()
 
     return HttpResponse(json.dumps(result))
+
 
 @csrf_exempt
 def comment(request):
@@ -146,8 +156,8 @@ def comment(request):
 
         result.setOK()
 
-
     return HttpResponse(json.dumps(result))
+
 
 @csrf_exempt
 def view_comment(request):
@@ -157,11 +167,13 @@ def view_comment(request):
         comments = Comment.objects.filter(wiki_title=wiki_title).order_by('time')
         result.setData("comments", [])
         for i in comments:
-            result['comments'].append({"account": i.user_account.account, "content": i.content, "time": str(i.time).split('+')[0]})
+            result['comments'].append(
+                {"account": i.user_account.account, "content": i.content, "time": str(i.time).split('+')[0]})
 
         result.setOK()
 
     return HttpResponse(json.dumps(result))
+
 
 @csrf_exempt
 def search_wiki_title(request):
@@ -180,12 +192,13 @@ def search_wiki_title(request):
             for i in existing[::-1]:
                 if i.title not in temp:
                     result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
-                                           "img": i.img_url})
+                                               "img": i.img_url})
                     temp.add(i.title)
         else:
             result.setStatuscode(0)
 
     return HttpResponse(json.dumps(result))
+
 
 @csrf_exempt
 def search_wiki_category(request):
@@ -204,7 +217,7 @@ def search_wiki_category(request):
             for i in existing[::-1]:
                 if i.title not in temp:
                     result["existing"].append({"title": i.title, "id": i.id, "introduction": i.introduction,
-                                           "img": i.img_url})
+                                               "img": i.img_url})
                     temp.add(i.title)
         else:
             result.setStatuscode(0)
