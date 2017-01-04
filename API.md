@@ -470,7 +470,7 @@ fail:
 ```
 
 #### 2.6 查看用户简介
-URL:(GET，要求用户已登录)
+URL:(GET)
 ```
 /user/profile?account=xxx
 ```
@@ -479,14 +479,14 @@ success
 ```
 {
     "statuscode":0,
-    "1":[(用户参与创建的词条)
+    "create":[(用户参与创建的词条)
         {
             "wiki_id":xxx,
             "title":xxx,
             "status":xxx
         },...
     ],
-    "2":[(用户参与修改的词条)
+    "modified":[(用户参与修改的词条)
         {
             "wiki_id":xxx,
             "title":xxx,
