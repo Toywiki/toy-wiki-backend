@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.contrib.auth.views import auth_login, auth_logout
 from django.conf.urls.static import static
 from backend import settings
 from toywiki.user_views import user_register, user_login, user_logout, update_password, \
@@ -40,7 +41,7 @@ urlpatterns = [
                   # url(r'^wiki/review', review_wiki),
                   url(r'^user/register', user_register),
                   url(r'^user/login', user_login),
-                  url(r'^user/logout', user_logout),
+                  url(r'^user/logout',user_logout),
                   url(r'^user/password', update_password),
                   url(r'^user/celebrity', find_celebrity),
                   url(r'^user/portrait', user_portrait),

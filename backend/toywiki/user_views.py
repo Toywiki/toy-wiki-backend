@@ -1,5 +1,6 @@
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -15,7 +16,7 @@ def user_register(request):
         account = body.get("account")
         pwd = body.get("pwd")
         result = Result()
-        default_partrait = "/media/1.png"
+        default_partrait = "/media/default.png"
         if len(User.objects.filter(account=account)) == 0:
             user = User.objects.create_user(account=account, password=pwd, portrait_url=default_partrait)
             user.save()
@@ -27,8 +28,8 @@ def user_register(request):
 
 @csrf_exempt
 def user_login(request):
+    result = Result()
     if request.method == "POST":
-        result = Result()
         body = json.loads(request.body.decode())
         account = body.get("account")
         pwd = body.get("pwd")
@@ -39,11 +40,10 @@ def user_login(request):
         user = authenticate(account=account, password=pwd)
         if user is not None:
             result.setOK()
-            login(request, user)
-            return HttpResponse(json.dumps(result))
+            login(request,user)
         else:
             result.setData("data", "密码不正确")
-            return HttpResponse(json.dumps(result))
+    return HttpResponse(json.dumps(result), content_type='application/json')
 
 
 @csrf_exempt
@@ -81,7 +81,7 @@ def update_password(request):
 def find_celebrity(request):
     if request.method == "GET":
         result = Result()
-        query_res = User.objects.order_by(F("num_of_wiki").desc()).exclude(is_superuser=1)
+        query_res = User.objects.order_by(F("num_of_wiki").desc()).exclude(is_admin=1)
         if len(query_res) > 3:
             data = [{"account": user.account, "portrait_url": user.portrait_url, "num_of_wiki": user.num_of_wiki} for
                     user in query_res[0:3]]
@@ -94,7 +94,6 @@ def find_celebrity(request):
 
 
 @csrf_exempt
-@login_required()
 def user_portrait(request):
     result = Result()
     if request.method == "POST":
@@ -124,18 +123,15 @@ def view_profile(request):
     if request.method == "GET":
         result = Result()
         account = request.GET.get("account")
-        if request.user.is_authenticated:
-            data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
-                    Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=1).select_related()]
-            result.setData("1", data)
-            data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
-                    Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=2).select_related()]
-            result.setData("2", data)
-            result.setOK()
-            return HttpResponse(json.dumps(result))
-        else:
-            result.setStatuscode(-1)
-            return HttpResponse(json.dumps(result))
+        data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
+                Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=1).select_related()]
+        result.setData("1", data)
+        data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
+                Wiki.objects.filter(wikiuser__user_account=account, wikiuser__relationship=2).select_related()]
+        result.setData("2", data)
+        result.setOK()
+        return HttpResponse(json.dumps(result))
+
 
 
 @csrf_exempt
