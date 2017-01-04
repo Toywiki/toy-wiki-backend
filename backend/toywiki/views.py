@@ -69,6 +69,7 @@ def view_wiki(request):
             result.setData("introduction", wiki.introduction)
             result.setData("content", wiki.content)
             result.setData("img", wiki.img_url)
+            result.setData("category", wiki.category)
             wiki.hits = int(wiki.hits) + 1
             wiki.save()
             result.setOK()
@@ -156,7 +157,7 @@ def view_comment(request):
         comments = Comment.objects.filter(wiki_title=wiki_title).order_by('time')
         result.setData("comments", [])
         for i in comments:
-            result['comments'].append({"account": i.user_account.account, "content": i.content, "time": i.time})
+            result['comments'].append({"account": i.user_account.account, "content": i.content, "time": str(i.time).split('+')[0]})
 
         result.setOK()
 

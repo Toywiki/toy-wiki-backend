@@ -82,6 +82,7 @@ success:
     "introduction": "词条简介",
     "content": "词条内容",
     "img": "词条URL",
+    "category": "词条类别",
     "statuscode": 0
 }
 
@@ -195,7 +196,7 @@ success:
         {
             "account":"用户ID",
             "content":"评论内容",
-            "time":"评论时间"
+            "time":"2017-01-02 02:12:03"
         },
         {
             "account":"用户ID",
