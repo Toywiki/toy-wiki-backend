@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views import View
 from backend.settings import MEDIA_ROOT
 from toywiki.models import Wiki, WikiUser, Comment, User
 from uuid import uuid4
@@ -11,11 +13,14 @@ import json
 
 # Create your views here.
 
-@csrf_exempt
-def upload_img(request):
-    result = Result()
 
-    if request.method == "POST":
+class Upload_img(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Upload_img, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        result = Result()
 
         img = request.FILES.get("file")
         if img is not None:
@@ -33,14 +38,16 @@ def upload_img(request):
 
             result.setData("url", "/media/" + filename)
             result.setOK()
+        return HttpResponse(json.dumps(result))
 
-    return HttpResponse(json.dumps(result))
 
+class Create_wiki(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Create_wiki, self).dispatch(request, *args, **kwargs)
 
-@csrf_exempt
-def create_wiki(request):
-    result = Result()
-    if request.method == "POST":
+    def post(self, request):
+        result = Result()
         title = json.loads(request.body.decode()).get('title')
         if title is not None:
             existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
@@ -57,14 +64,16 @@ def create_wiki(request):
                         temp.add(i.title)
             else:
                 result.setStatuscode(0)
+        return HttpResponse(json.dumps(result))
 
-    return HttpResponse(json.dumps(result))
 
+class View_wiki(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(View_wiki, self).dispatch(request, *args, **kwargs)
 
-@csrf_exempt
-def view_wiki(request):
-    result = Result()
-    if request.method == "GET":
+    def get(self, request):
+        result = Result()
         id = request.GET.get('id')
         wiki = Wiki.objects.filter(id=id)
         if len(wiki) > 0:
@@ -77,14 +86,16 @@ def view_wiki(request):
             wiki.hits = int(wiki.hits) + 1
             wiki.save()
             result.setOK()
+        return HttpResponse(json.dumps(result))
 
-    return HttpResponse(json.dumps(result))
 
+class Save_wiki(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Save_wiki, self).dispatch(request, *args, **kwargs)
 
-@csrf_exempt
-def save_wiki(request):
-    result = Result()
-    if request.method == "POST":
+    def post(self, request):
+        result = Result()
         wiki = json.loads(request.body.decode())
         if wiki is not None:
             account = wiki.get('account')
@@ -100,7 +111,7 @@ def save_wiki(request):
             user = User.objects.filter(account=account)
             if len(user) > 0:
                 user = user[0]
-                user.num_of_wiki+=1
+                user.num_of_wiki += 1
                 user.save()
                 newWikiUser = WikiUser(user_account=user, wiki=newWiki, relationship=1)
                 newWikiUser.save()
@@ -109,14 +120,16 @@ def save_wiki(request):
             else:
                 newWiki.delete()
                 newWiki.save()
+        return HttpResponse(json.dumps(result))
 
-    return HttpResponse(json.dumps(result))
 
+class Edit_wiki(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Edit_wiki, self).dispatch(request, *args, **kwargs)
 
-@csrf_exempt
-def edit_wiki(request):
-    result = Result()
-    if request.method == "POST":
+    def post(self, request):
+        result = Result()
         wiki = json.loads(request.body.decode())
         if wiki is not None:
             account = wiki.get('account')
@@ -139,13 +152,16 @@ def edit_wiki(request):
 
             result.setOK()
 
-    return HttpResponse(json.dumps(result))
+        return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def comment(request):
-    result = Result()
-    if request.method == "POST":
+class Wiki_Comment(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Wiki_Comment, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        result = Result()
         comm = json.loads(request.body.decode())
         account = comm.get('account')
         wiki_title = comm.get('wiki_title')
@@ -156,13 +172,16 @@ def comment(request):
 
         result.setOK()
 
-    return HttpResponse(json.dumps(result))
+        return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def view_comment(request):
-    result = Result()
-    if request.method == "POST":
+class View_comment(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(View_comment, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        result = Result()
         wiki_title = json.loads(request.body.decode()).get('wiki_title')
         comments = Comment.objects.filter(wiki_title=wiki_title).order_by('time')
         result.setData("comments", [])
@@ -171,14 +190,16 @@ def view_comment(request):
                 {"account": i.user_account.account, "content": i.content, "time": str(i.time).split('+')[0]})
 
         result.setOK()
+        return HttpResponse(json.dumps(result))
 
-    return HttpResponse(json.dumps(result))
 
+class Search_wiki_title(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Search_wiki_title, self).dispatch(request, *args, **kwargs)
 
-@csrf_exempt
-def search_wiki_title(request):
-    result = Result()
-    if request.method == "POST":
+    def post(self, request):
+        result = Result()
         title = json.loads(request.body.decode()).get('title')
 
         existing = Wiki.objects.filter(title__icontains=title, status=1).order_by('time')
@@ -197,13 +218,16 @@ def search_wiki_title(request):
         else:
             result.setStatuscode(0)
 
-    return HttpResponse(json.dumps(result))
+        return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def search_wiki_category(request):
-    result = Result()
-    if request.method == "POST":
+class Search_wiki_category(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Search_wiki_category, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        result = Result()
         category = json.loads(request.body.decode()).get('category')
 
         existing = Wiki.objects.filter(category=category, status=1).order_by('time')
@@ -222,13 +246,16 @@ def search_wiki_category(request):
         else:
             result.setStatuscode(0)
 
-    return HttpResponse(json.dumps(result))
+        return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def hot_wiki(request):
-    result = Result()
-    if request.method == "GET":
+class Hot_wiki(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Hot_wiki, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        result = Result()
 
         wikis = Wiki.objects.filter(status=1).order_by('time')
 
@@ -240,5 +267,4 @@ def hot_wiki(request):
                 if i.title not in temp:
                     result['wikis'].append({"id": i.id, "title": i.title, "img": i.img_url})
         result.setOK()
-
-    return HttpResponse(json.dumps(result))
+        return HttpResponse(json.dumps(result))

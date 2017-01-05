@@ -19,23 +19,22 @@ from django.contrib.auth.views import auth_login, auth_logout
 from django.conf.urls.static import static
 from backend import settings
 from toywiki.user_views import Register, Login, Logout, Password, Celebrity, Portrait, Profile
-from toywiki.views import upload_img, create_wiki, view_wiki, save_wiki, edit_wiki, \
-    comment, view_comment, search_wiki_category, search_wiki_title, hot_wiki
+from toywiki.views import Upload_img, Create_wiki, View_wiki, Save_wiki, Edit_wiki, \
+    Wiki_Comment, View_comment, Search_wiki_category, Search_wiki_title, Hot_wiki
 
 urlpatterns = [
                   url(r'^admin/', admin.site.urls),
-                  url(r'^uploadimage', upload_img),
-                  url(r'^wiki/createwiki', create_wiki),
-                  url(r'^wiki/viewwiki', view_wiki),
-                  url(r'^wiki/createwiki', create_wiki),
-                  url(r'^wiki/editwiki', edit_wiki),
-                  url(r'^wiki/savewiki', save_wiki),
-                  url(r'^wiki/comment', comment),
-                  url(r'^wiki/viewcomment', view_comment),
-                  url(r'^wiki/searchwiki_title', search_wiki_title),
-                  url(r'^wiki/searchwiki_category', search_wiki_category),
-                  url(r'^wiki/hotwiki', hot_wiki),
-
+                  url(r'^uploadimage', Upload_img.as_view()),
+                  url(r'^wiki/createwiki', Create_wiki.as_view()),
+                  url(r'^wiki/viewwiki', View_wiki.as_view()),
+                  url(r'^wiki/createwiki', Create_wiki.as_view),
+                  url(r'^wiki/editwiki', Edit_wiki.as_view()),
+                  url(r'^wiki/savewiki', Save_wiki.as_view()),
+                  url(r'^wiki/comment', Wiki_Comment.as_view()),
+                  url(r'^wiki/viewcomment', View_comment.as_view()),
+                  url(r'^wiki/searchwiki_title', Search_wiki_title.as_view()),
+                  url(r'^wiki/searchwiki_category', Search_wiki_category.as_view()),
+                  url(r'^wiki/hotwiki', Hot_wiki.as_view()),
 
                   url(r'^user/register', Register.as_view()),
                   url(r'^user/login', Login.as_view()),
