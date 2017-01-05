@@ -8,12 +8,12 @@ from toywiki.models import User, Wiki, WikiUser
 from toywiki.utils import Result
 from django.db.models import F
 
-
-class Register(View):
+class Base(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super(Register, self).dispatch(request, *args, **kwargs)
+        return super(Base, self).dispatch(request, *args, **kwargs)
 
+class Register(Base):
     def post(self, request):
         body = json.loads(request.body.decode())
         account = body.get("account")
@@ -29,11 +29,7 @@ class Register(View):
         return HttpResponse(json.dumps(result))
 
 
-class Login(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Login, self).dispatch(request, *args, **kwargs)
-
+class Login(Base):
     def post(self, request):
         result = Result()
         body = json.loads(request.body.decode())
@@ -52,11 +48,7 @@ class Login(View):
         return HttpResponse(json.dumps(result), content_type='application/json')
 
 
-class Logout(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Logout, self).dispatch(request, *args, **kwargs)
-
+class Logout(Base):
     def get(self, request):
         result = Result()
         logout(request)
@@ -64,11 +56,7 @@ class Logout(View):
         return HttpResponse(json.dumps(result))
 
 
-class Password(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Password, self).dispatch(request, *args, **kwargs)
-
+class Password(Base):
     def post(self, request):
         result = Result()
         body = json.loads(request.body.decode())
@@ -91,11 +79,7 @@ class Password(View):
 
 
 
-class Celebrity(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Celebrity, self).dispatch(request, *args, **kwargs)
-
+class Celebrity(Base):
     def get(self, request):
         result = Result()
         query_res = User.objects.order_by(F("num_of_wiki").desc()).exclude(is_admin=1)
@@ -110,11 +94,7 @@ class Celebrity(View):
         return HttpResponse(json.dumps(result))
 
 
-class Portrait(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Portrait, self).dispatch(request, *args, **kwargs)
-
+class Portrait(Base):
     def post(self, request):
         result = Result()
         body = json.loads(request.body.decode())
@@ -140,11 +120,7 @@ class Portrait(View):
         return HttpResponse(json.dumps(result))
 
 
-class Profile(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Profile, self).dispatch(request, *args, **kwargs)
-
+class Profile(Base):
     def get(self, request):
         result = Result()
         account = request.GET.get("account")

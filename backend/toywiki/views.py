@@ -2,11 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.views import View
 from backend.settings import MEDIA_ROOT
 from toywiki.models import Wiki, WikiUser, Comment, User
 from uuid import uuid4
 from toywiki.utils import Result
+from toywiki.user_views import Base
 import os
 import json
 
@@ -14,11 +14,7 @@ import json
 # Create your views here.
 
 
-class Upload_img(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Upload_img, self).dispatch(request, *args, **kwargs)
-
+class Upload_img(Base):
     def post(self, request):
         result = Result()
 
@@ -41,11 +37,7 @@ class Upload_img(View):
         return HttpResponse(json.dumps(result))
 
 
-class Create_wiki(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Create_wiki, self).dispatch(request, *args, **kwargs)
-
+class Create_wiki(Base):
     def post(self, request):
         result = Result()
         title = json.loads(request.body.decode()).get('title')
@@ -67,11 +59,7 @@ class Create_wiki(View):
         return HttpResponse(json.dumps(result))
 
 
-class View_wiki(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(View_wiki, self).dispatch(request, *args, **kwargs)
-
+class View_wiki(Base):
     def get(self, request):
         result = Result()
         id = request.GET.get('id')
@@ -89,11 +77,7 @@ class View_wiki(View):
         return HttpResponse(json.dumps(result))
 
 
-class Save_wiki(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Save_wiki, self).dispatch(request, *args, **kwargs)
-
+class Save_wiki(Base):
     def post(self, request):
         result = Result()
         wiki = json.loads(request.body.decode())
@@ -123,11 +107,7 @@ class Save_wiki(View):
         return HttpResponse(json.dumps(result))
 
 
-class Edit_wiki(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Edit_wiki, self).dispatch(request, *args, **kwargs)
-
+class Edit_wiki(Base):
     def post(self, request):
         result = Result()
         wiki = json.loads(request.body.decode())
@@ -155,11 +135,7 @@ class Edit_wiki(View):
         return HttpResponse(json.dumps(result))
 
 
-class Wiki_Comment(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Wiki_Comment, self).dispatch(request, *args, **kwargs)
-
+class Wiki_Comment(Base):
     def post(self, request):
         result = Result()
         comm = json.loads(request.body.decode())
@@ -175,11 +151,7 @@ class Wiki_Comment(View):
         return HttpResponse(json.dumps(result))
 
 
-class View_comment(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(View_comment, self).dispatch(request, *args, **kwargs)
-
+class View_comment(Base):
     def post(self, request):
         result = Result()
         wiki_title = json.loads(request.body.decode()).get('wiki_title')
@@ -193,11 +165,7 @@ class View_comment(View):
         return HttpResponse(json.dumps(result))
 
 
-class Search_wiki_title(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Search_wiki_title, self).dispatch(request, *args, **kwargs)
-
+class Search_wiki_title(Base):
     def post(self, request):
         result = Result()
         title = json.loads(request.body.decode()).get('title')
@@ -221,11 +189,7 @@ class Search_wiki_title(View):
         return HttpResponse(json.dumps(result))
 
 
-class Search_wiki_category(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Search_wiki_category, self).dispatch(request, *args, **kwargs)
-
+class Search_wiki_category(Base):
     def post(self, request):
         result = Result()
         category = json.loads(request.body.decode()).get('category')
@@ -249,11 +213,7 @@ class Search_wiki_category(View):
         return HttpResponse(json.dumps(result))
 
 
-class Hot_wiki(View):
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(Hot_wiki, self).dispatch(request, *args, **kwargs)
-
+class Hot_wiki(Base):
     def get(self, request):
         result = Result()
 
