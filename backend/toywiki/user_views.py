@@ -1,24 +1,27 @@
-from django.shortcuts import render
+from django.views import View
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.http import HttpRequest, HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 import json
 from toywiki.models import User, Wiki, WikiUser
 from toywiki.utils import Result
 from django.db.models import F
 
 
-@csrf_exempt
-def user_register(request):
-    if request.method == "POST":
+class Register(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Register, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
         body = json.loads(request.body.decode())
         account = body.get("account")
         pwd = body.get("pwd")
         result = Result()
         default_partrait = "/media/default.png"
         if len(User.objects.filter(account=account)) == 0:
-            user = User.objects.create_user(account=account, password=pwd, portrait_url=default_partrait,num_of_wiki=0)
+            user = User.objects.create_user(account=account, password=pwd, portrait_url=default_partrait, num_of_wiki=0)
             user.save()
             result.setOK()
         else:
@@ -26,10 +29,13 @@ def user_register(request):
         return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def user_login(request):
-    result = Result()
-    if request.method == "POST":
+class Login(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Login, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        result = Result()
         body = json.loads(request.body.decode())
         account = body.get("account")
         pwd = body.get("pwd")
@@ -40,23 +46,30 @@ def user_login(request):
         user = authenticate(account=account, password=pwd)
         if user is not None:
             result.setOK()
-            login(request,user)
+            login(request, user)
         else:
             result.setData("data", "密码不正确")
-    return HttpResponse(json.dumps(result), content_type='application/json')
+        return HttpResponse(json.dumps(result), content_type='application/json')
 
 
-@csrf_exempt
-def user_logout(request):
-    result = Result()
-    logout(request)
-    result.setOK()
-    return HttpResponse(json.dumps(result))
+class Logout(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Logout, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        result = Result()
+        logout(request)
+        result.setOK()
+        return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def update_password(request):
-    if request.method == "POST":
+class Password(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Password, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
         result = Result()
         body = json.loads(request.body.decode())
         account = body.get("account")
@@ -77,9 +90,13 @@ def update_password(request):
             return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def find_celebrity(request):
-    if request.method == "GET":
+
+class Celebrity(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Celebrity, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
         result = Result()
         query_res = User.objects.order_by(F("num_of_wiki").desc()).exclude(is_admin=1)
         if len(query_res) > 3:
@@ -93,10 +110,13 @@ def find_celebrity(request):
         return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def user_portrait(request):
-    result = Result()
-    if request.method == "POST":
+class Portrait(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Portrait, self).dispatch(request, *args, **kwargs)
+
+    def post(self, request):
+        result = Result()
         body = json.loads(request.body.decode())
         account = body.get("account")
         portrait_url = body.get("portrait_url")
@@ -110,7 +130,9 @@ def user_portrait(request):
             user.save(update_fields=["portrait_url"])
             result.setOK()
             return HttpResponse(json.dumps(result))
-    if request.method == "GET":
+
+    def get(self, request):
+        result = Result()
         account = request.GET.get("account")
         query_res = User.objects.filter(account=account).get()
         result.setOK()
@@ -118,9 +140,12 @@ def user_portrait(request):
         return HttpResponse(json.dumps(result))
 
 
-@csrf_exempt
-def view_profile(request):
-    if request.method == "GET":
+class Profile(View):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(Profile, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request):
         result = Result()
         account = request.GET.get("account")
         data = [{"wiki_id": w.id, "title": w.title, "status": w.status} for w in
@@ -131,40 +156,3 @@ def view_profile(request):
         result.setData("modified", data)
         result.setOK()
         return HttpResponse(json.dumps(result))
-
-
-
-@csrf_exempt
-def review_wiki(request):
-    if request.method == "GET":
-        result = Result()
-        data = [{"title": w.title, "wiki_id": w.id} for w in Wiki.objects.filter(status=0)]
-        result.setOK()
-        result.setData("data", data)
-        return HttpResponse(json.dumps(result))
-
-
-@csrf_exempt
-def update_wiki_status(request):
-    if request.method == "POST":
-        result = Result()
-        if request.user.is_authenticated and request.user.is_superuser:
-            body = json.loads(request.body.decode())
-            wiki_id = body.get("wiki_id")
-            status = body.get("status")
-            query_res = Wiki.objects.filter(id=wiki_id)
-            if len(query_res) == 0:
-                result.setData("data", "wiki不存在")
-                return HttpResponse(json.dumps(result))
-            else:
-                w = query_res[0]
-                w.status = status
-                w.save(update_fields=["status"])
-                result.setOK()
-                return HttpResponse(json.dumps(result))
-        elif request.user.is_authenticated:
-            result.setData("data", "不是管理员")
-            return HttpResponse(json.dumps(result))
-        else:
-            result.setData("data", "未登录")
-            return HttpResponse(json.dumps(result))

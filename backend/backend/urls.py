@@ -18,8 +18,7 @@ from django.contrib import admin
 from django.contrib.auth.views import auth_login, auth_logout
 from django.conf.urls.static import static
 from backend import settings
-from toywiki.user_views import user_register, user_login, user_logout, update_password, \
-    find_celebrity, user_portrait, view_profile
+from toywiki.user_views import Register, Login, Logout, Password, Celebrity, Portrait, Profile
 from toywiki.views import upload_img, create_wiki, view_wiki, save_wiki, edit_wiki, \
     comment, view_comment, search_wiki_category, search_wiki_title, hot_wiki
 
@@ -37,15 +36,14 @@ urlpatterns = [
                   url(r'^wiki/searchwiki_category', search_wiki_category),
                   url(r'^wiki/hotwiki', hot_wiki),
 
-                  # url(r'^wiki/status', update_wiki_status),
-                  # url(r'^wiki/review', review_wiki),
-                  url(r'^user/register', user_register),
-                  url(r'^user/login', user_login),
-                  url(r'^user/logout',user_logout),
-                  url(r'^user/password', update_password),
-                  url(r'^user/celebrity', find_celebrity),
-                  url(r'^user/portrait', user_portrait),
-                  url(r'^user/profile', view_profile),
+
+                  url(r'^user/register', Register.as_view()),
+                  url(r'^user/login', Login.as_view()),
+                  url(r'^user/logout', Logout.as_view()),
+                  url(r'^user/password', Password.as_view()),
+                  url(r'^user/celebrity', Celebrity.as_view()),
+                  url(r'^user/portrait', Portrait.as_view()),
+                  url(r'^user/profile', Profile.as_view()),
 
               ] + static(
     settings.MEDIA_URL,
